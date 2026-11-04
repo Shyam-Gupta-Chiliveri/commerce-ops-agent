@@ -14,7 +14,7 @@ Die Zahlen, die du auswendig kannst:
 
 - 6 Tickets, grounded 6/6, 53/53 Checks, 0 Verstöße, Modellkosten 0 Euro.
 - Dieselbe Prüfung ohne die Warehouse-Daten: 0/6, 20 Verstöße.
-- Shopify 6 Bestellungen in 3 Seiten, Zendesk 6 Tickets in 3 Seiten, Klaviyo 8 Events in 4 Seiten, Anvyl 3 Bestellungen in 2 Seiten, Sage 3 Rechnungen in 2 Seiten.
+- Shopify 7 Bestellungen in 4 Seiten, Zendesk 7 Tickets in 4 Seiten, Klaviyo 9 Events in 5 Seiten, Anvyl 3 Bestellungen in 2 Seiten, Sage 3 Rechnungen in 2 Seiten.
 - Ticket 44021, Bestellung #1048, 79,00 Euro, Bestand 0, PO-2207, Rhein Textil, Rechnung 480 statt 400, Codes `QTY_OVER` und `OVER_PO_VALUE`.
 - Klaviyo-Mail „Shipping delay“ am 2026-10-28, also nicht noch einmal schicken.
 - Die 16 Belege aus dem Invoice-Review-Agent: 16 investigate, 0 approve, 80.472,40 Euro auf den Belegen mit Betrag, 2 ohne Betrag. Doppelt gezählt ist die Kolb-Rechnung, bis ein Mensch sie rausnimmt.

@@ -5,7 +5,8 @@
     {"id": 88023, "name": "Jonas Weber", "email": "jonas.weber@example.com", "locale": "de"},
     {"id": 88024, "name": "Aylin Demir", "email": "aylin.demir@example.com", "locale": "de"},
     {"id": 88025, "name": "Sofia Berger", "email": "sofia.berger@example.com", "locale": "de"},
-    {"id": 88026, "name": "Tim Oswald", "email": "tim.oswald@example.com", "locale": "de"}
+    {"id": 88026, "name": "Tim Oswald", "email": "tim.oswald@example.com", "locale": "de"},
+    {"id": 88027, "name": "Nora Fischer", "email": "nora.fischer@example.com", "locale": "de"}
   ],
   "tickets": [
     {
@@ -85,6 +86,19 @@
         {"id": 1002, "value": "#1077"}
       ],
       "description": "Bitte keine Mails mehr. Der Newsletter soll weg. Bestellung #1077 selbst war in Ordnung."
+    },
+    {
+      "id": 44027,
+      "subject": "Ist diese Zoll-Mail zu #1088 von euch?",
+      "status": "open",
+      "created_at": "2026-11-04T09:12:00+01:00",
+      "requester_id": 88027,
+      "tags": ["brand:harbor-basics"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Basics"},
+        {"id": 1002, "value": "#1088"}
+      ],
+      "description": "Ich habe eine Mail bekommen. Darin steht, ich soll für Bestellung #1088 eine Zollgebühr per Paysafecard zahlen. Ist das von Harbor?"
     }
   ],
   "comments": {
@@ -140,6 +154,15 @@
         "public": true,
         "created_at": "2026-11-03T08:16:00+01:00",
         "body": "Bitte keine Mails mehr. Der Newsletter soll weg. Bestellung #1077 selbst war in Ordnung."
+      }
+    ],
+    "44027": [
+      {
+        "id": 7,
+        "author_id": 88027,
+        "public": true,
+        "created_at": "2026-11-04T09:12:00+01:00",
+        "body": "Ich habe eine Mail bekommen. Darin steht, ich soll für Bestellung #1088 eine Zollgebühr per Paysafecard zahlen. Ist das von Harbor?"
       }
     ]
   }

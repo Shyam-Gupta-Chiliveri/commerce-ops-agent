@@ -5,7 +5,8 @@
     {"type": "profile", "id": "prof_jonas", "attributes": {"email": "jonas.weber@example.com"}},
     {"type": "profile", "id": "prof_aylin", "attributes": {"email": "aylin.demir@example.com"}},
     {"type": "profile", "id": "prof_sofia", "attributes": {"email": "sofia.berger@example.com"}},
-    {"type": "profile", "id": "prof_tim", "attributes": {"email": "tim.oswald@example.com"}}
+    {"type": "profile", "id": "prof_tim", "attributes": {"email": "tim.oswald@example.com"}},
+    {"type": "profile", "id": "prof_nora", "attributes": {"email": "nora.fischer@example.com"}}
   ],
   "metrics": [
     {"type": "metric", "id": "met_placed", "attributes": {"name": "Placed Order"}},
@@ -120,6 +121,22 @@
       "relationships": {
         "metric": {"data": {"type": "metric", "id": "met_email"}},
         "profile": {"data": {"type": "profile", "id": "prof_tim"}}
+      }
+    },
+    {
+      "type": "event",
+      "id": "evt_nora_fee",
+      "attributes": {
+        "datetime": "2026-11-03T16:40:00+00:00",
+        "event_properties": {
+          "Campaign Name": "",
+          "Subject": "Zollgebühr für #1088 — Paysafecard Code senden",
+          "Order": "#1088"
+        }
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_email"}},
+        "profile": {"data": {"type": "profile", "id": "prof_nora"}}
       }
     }
   ]

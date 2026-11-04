@@ -178,6 +178,37 @@
           "price": "22.00"
         }
       ]
+    },
+    {
+      "id": 5001088,
+      "name": "#1088",
+      "email": "nora.fischer@example.com",
+      "created_at": "2026-10-19T11:20:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "24.90",
+      "tags": "brand:Harbor Basics",
+      "customer": {"first_name": "Nora", "last_name": "Fischer"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-21"}],
+      "fulfillments": [
+        {
+          "id": 7006,
+          "status": "success",
+          "created_at": "2026-10-21T09:00:00+01:00",
+          "tracking_number": "00340434161000001088"
+        }
+      ],
+      "line_items": [
+        {
+          "id": 9007,
+          "sku": "HB-SOCK-39",
+          "title": "Basics Socken",
+          "variant_title": "39",
+          "quantity": 1,
+          "price": "24.90"
+        }
+      ]
     }
   ],
   "transactions": {

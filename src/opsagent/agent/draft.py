@@ -20,6 +20,7 @@ class CaseFile:
     requested_stock: Stock | None
     transactions: list[Txn]
     settings: Settings
+    fraud: list[dict]
 
     @property
     def blocked(self) -> list[Supply]:
@@ -39,6 +40,8 @@ def _days(start: str, end: str) -> int:
 
 
 def grounded(case: CaseFile) -> tuple[str, str, list[str]]:
+    if case.fraud or case.intent == "fraud":
+        return _fraud(case)
     if case.order is None:
         de = (
             f"Hallo {case.ticket.first_name},\n\n"
@@ -75,18 +78,27 @@ def _where_is(case: CaseFile) -> tuple[str, str, list[str]]:
     late_days = _days(order.promised_ship_date, case.settings.as_of) if order.promised_ship_date else 0
     ranked = sorted(case.alternatives, key=lambda item: -item.available)
     alts = " oder ".join(f"Größe {_size_label(item.option_label)}, {item.available}" for item in ranked)
+    alts_en = " or ".join(f"size {_size_label(item.option_label)} ({item.available} in stock)" for item in ranked)
     delay_sentence = "Dazu liegt keine Verzögerungsmail vor."
+    delay_en = "There is no delay email on file."
     actions = ["offer_size_exchange", "offer_refund", "do_not_promise_date"]
     discount_sentence = "Einen Rabatt biete ich bei dieser Verspätung nicht an."
+    discount_en = "I am not offering a discount for this delay"
     if late_days >= case.settings.delay_offer_after_days:
         actions.insert(0, "offer_wait_with_discount")
         discount_sentence = (
             f"warten und {case.settings.delay_discount_pct} % auf diese Bestellung erhalten, sobald sie das Lager verlässt"
         )
+        discount_en = (
+            f"wait, and receive {case.settings.delay_discount_pct}% on this order once it leaves the warehouse"
+        )
     if delay is not None:
         delay_sentence = (
             f"Die Hinweis-Mail zur Verzögerung vom {_day(delay.happened_at)} hast du schon bekommen. "
             "Ich schicke sie nicht noch einmal."
+        )
+        delay_en = (
+            f"You already received the delay email on {_day(delay.happened_at)}. I will not send it again."
         )
         actions.append("do_not_resend_delay_email")
     de = (
@@ -104,11 +116,39 @@ def _where_is(case: CaseFile) -> tuple[str, str, list[str]]:
         "Sag mir, welche Möglichkeit du möchtest. Umsetzen tue ich das erst nach deiner Antwort.\n"
     )
     en = (
-        f"Order {order.order_name} is paid and unfulfilled, with no tracking number. "
-        f"SKU {line.sku} has stock {case.on_hand}. Inbound {block.order_number} from {block.supplier_name} "
-        f"is blocked ({block.issue_codes}). I will not promise a delivery date."
+        f"Hello {case.ticket.first_name},\n\n"
+        f"thank you for writing about order {order.order_name} ({line.title}, {line.variant_title}).\n\n"
+        f"The shop shows the order as paid and not yet shipped. We do not have a tracking number. "
+        f"The promised ship date was {order.promised_ship_date}. "
+        f"As of {case.settings.as_of} it is overdue, and the size you ordered has {case.on_hand} in stock.\n\n"
+        f"The replenishment is purchase order {block.order_number} with {block.supplier_name}. "
+        f"The supplier bill is on hold ({block.issue_codes}) because the billed quantity is above the ordered quantity. "
+        "I cannot promise a delivery date.\n\n"
+        f"You can choose: {discount_en}; switch to {alts_en}; "
+        f"or receive the full {order.total_price} {order.currency} back.\n\n"
+        f"{delay_en}\n\n"
+        "Tell me which option you want. I will not change the order until you reply.\n"
     )
     return de, en, actions
+
+
+def _fraud(case: CaseFile) -> tuple[str, str, list[str]]:
+    order_name = case.order.order_name if case.order else (case.ticket.order_name or "der genannten Bestellung")
+    de = (
+        f"Hallo {case.ticket.first_name},\n\n"
+        f"die Mail zu {order_name}, die eine Gebühr oder einen Zahlencode verlangt, ist nicht von uns. "
+        "Harbor nimmt keine Paysafecard und keine Zahlung außerhalb des Shops an.\n\n"
+        "Bitte den Code nicht schicken und keinen Link aus der Mail öffnen. "
+        "Ich lege das einer Kollegin hin und ändere die Bestellung nicht.\n"
+    )
+    en = (
+        f"Hello {case.ticket.first_name},\n\n"
+        f"the email about {order_name} that asks for a fee or a payment code is not from us. "
+        "Harbor does not take Paysafecard or any payment outside the shop.\n\n"
+        "Please do not send the code, and do not open a link from that email. "
+        "I am leaving this with a colleague, and I will not change the order.\n"
+    )
+    return de, en, ["do_not_pay_off_platform", "hand_to_human"]
 
 
 def _refund(case: CaseFile) -> tuple[str, str, list[str]]:
@@ -117,6 +157,7 @@ def _refund(case: CaseFile) -> tuple[str, str, list[str]]:
     if order.financial_status == "refunded":
         refund_txn = next((txn for txn in case.transactions if txn.kind == "refund"), None)
         when = _day(refund_txn.created_at) if refund_txn else "dem hinterlegten Datum"
+        when_en = _day(refund_txn.created_at) if refund_txn else "the date on file"
         de = (
             f"Hallo {case.ticket.first_name},\n\n"
             f"Bestellung {order.order_name} ist bereits erstattet. "
@@ -126,7 +167,14 @@ def _refund(case: CaseFile) -> tuple[str, str, list[str]]:
             "prüfe bitte die Karte, mit der du bezahlt hast. Wenn er dort auch nicht ankommt, "
             "antworte kurz, dann gibt das Payment-Team den Fall weiter.\n"
         )
-        en = f"Order {order.order_name} is already refunded for {order.total_price} {order.currency}. No second refund."
+        en = (
+            f"Hello {case.ticket.first_name},\n\n"
+            f"order {order.order_name} has already been refunded. "
+            f"The payment status is refunded, amount {order.total_price} {order.currency}. "
+            f"The refund in the shop is dated {when_en}.\n\n"
+            "I will not issue a second refund. If the amount is missing from your statement, "
+            "please check the card you paid with. If it is not there either, reply and the payments team will take it from here.\n"
+        )
         return de, en, ["do_not_refund_again", "escalate_if_payout_missing"]
     de = (
         f"Hallo {case.ticket.first_name},\n\n"
@@ -154,7 +202,14 @@ def _exchange(case: CaseFile) -> tuple[str, str, list[str]]:
             "Eine Erstattung löse ich nicht aus, solange du den Umtausch möchtest. "
             "Das Retourenlabel lege ich erst an, wenn du den Umtausch bestätigst.\n"
         )
-        en = f"Exchange on {order.order_name} to size {case.requested_size} is in stock. Waiting for a yes before the label."
+        en = (
+            f"Hello {case.ticket.first_name},\n\n"
+            f"order {order.order_name} ({line.title}, size {line.variant_title}) has been delivered. "
+            f"An exchange to size {case.requested_size} is possible: {stock.available} are in stock, "
+            f"and the {case.settings.return_window_days}-day return window is still open.\n\n"
+            "Send the delivered size back. The new size goes out once the return is booked. "
+            "I will not refund while you want the exchange, and I will not create the return label until you confirm.\n"
+        )
         return de, en, ["offer_exchange", "wait_for_customer_confirm"]
     de = (
         f"Hallo {case.ticket.first_name},\n\n"
@@ -177,7 +232,14 @@ def _double(case: CaseFile) -> tuple[str, str, list[str]]:
             "Ob deine Bank eine zweite Buchung anzeigt, kann ich aus Shopify nicht belegen. "
             "Ich gebe das an das Payment-Team und bestätige dir keine Doppelabbuchung, die in der Bestellung nicht steht.\n"
         )
-        en = f"Shopify shows one successful sale of {sales[0].amount} on {order.order_name}. I will not confirm a second charge."
+        en = (
+            f"Hello {case.ticket.first_name},\n\n"
+            f"I checked order {order.order_name}. The shop shows exactly one payment "
+            f"of {sales[0].amount} {order.currency} on {_day(sales[0].created_at)}, status {order.financial_status}. "
+            "I do not see a second order or a second charge there.\n\n"
+            "I cannot see from the shop whether your bank shows another posting. "
+            "I am handing this to the payments team, and I will not confirm a double charge that is not on the order.\n"
+        )
         return de, en, ["escalate_payments", "do_not_confirm_double_charge"]
     de = (
         f"Hallo {case.ticket.first_name},\n\n"
@@ -200,7 +262,14 @@ def _complaint(case: CaseFile) -> tuple[str, str, list[str]]:
         f"oder den Betrag von {order.total_price} {order.currency} erstatten. "
         "Was davon passiert, setzt eine Kollegin um, nachdem du dich entschieden hast.\n"
     )
-    en = f"No medical advice on {order.order_name}. Replacement or refund only after the customer chooses, then a person executes it."
+    en = (
+        f"Hello {case.ticket.first_name},\n\n"
+        f"I am sorry that the {line.title} from order {order.order_name} did not hold up.\n\n"
+        "I cannot give you medical advice. If you have pain or a skin irritation, please speak to a doctor. "
+        f"From the shop I can offer a replacement ({case.on_hand} in stock) "
+        f"or a refund of {order.total_price} {order.currency}. "
+        "A colleague will do whichever you choose, after you decide.\n"
+    )
     return de, en, ["offer_replacement_or_refund", "no_medical_advice", "wait_for_customer_confirm"]
 
 
@@ -209,6 +278,7 @@ def _cancel(case: CaseFile) -> tuple[str, str, list[str]]:
     assert order is not None
     winback = next((event for event in case.events if event.campaign == "Winback"), None)
     seen = f" Im Profil liegt eine Winback-Mail vom {_day(winback.happened_at)}." if winback else ""
+    seen_en = f" The profile has a winback email from {_day(winback.happened_at)}." if winback else ""
     de = (
         f"Hallo {case.ticket.first_name},\n\n"
         f"Bestellung {order.order_name} bleibt, wie sie ist. Sie wurde geliefert, ich storniere sie nicht.\n\n"
@@ -216,7 +286,13 @@ def _cancel(case: CaseFile) -> tuple[str, str, list[str]]:
         "Die Abmeldung ist eine Schreibaktion im Marketing-Tool. Die führe ich nicht selbst aus. "
         "Ich lege sie einer Kollegin hin, die den Versand stoppt.\n"
     )
-    en = f"Order {order.order_name} stays. Marketing suppression is a write, queued for a person."
+    en = (
+        f"Hello {case.ticket.first_name},\n\n"
+        f"order {order.order_name} stays as it is. It was delivered, and I will not cancel it.\n\n"
+        f"You do not want further campaign emails.{seen_en} "
+        "Unsubscribing is a write in the marketing tool. I do not do that myself. "
+        "I am leaving it with a colleague, who will stop the emails.\n"
+    )
     return de, en, ["keep_order", "queue_marketing_suppression"]
 
 

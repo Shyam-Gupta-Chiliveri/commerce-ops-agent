@@ -7,12 +7,12 @@ from opsagent.warehouse.queries import connect
 
 def test_pagination_reaches_every_system(synced):
     _http, _settings, _db, stats = synced
-    assert stats.shopify_orders == 6
-    assert stats.shopify_pages == 3
-    assert stats.zendesk_tickets == 6
-    assert stats.zendesk_pages == 3
-    assert stats.klaviyo_events == 8
-    assert stats.klaviyo_pages == 4
+    assert stats.shopify_orders == 7
+    assert stats.shopify_pages == 4
+    assert stats.zendesk_tickets == 7
+    assert stats.zendesk_pages == 4
+    assert stats.klaviyo_events == 9
+    assert stats.klaviyo_pages == 5
     assert stats.anvyl_orders == 3
     assert stats.anvyl_pages == 2
     assert stats.sage_bills == 3
@@ -71,6 +71,20 @@ def test_grounded_passes_and_does_not_write(synced):
     assert hero.executed_writes == []
     assert "bis Sonntag" not in hero.reply_de
     assert "PO-2207" in hero.reply_de
+
+
+def test_fraud_email_is_flagged_from_ticket_shop_and_email(synced):
+    _http, settings, db, _stats = synced
+    flagged = review_ticket(db, 44027, settings)
+    sources = [item["source"] for item in flagged.fraud]
+    assert flagged.intent == "fraud"
+    assert sources == ["Zendesk", "Shopify", "Klaviyo"]
+    assert flagged.executed_writes == []
+    assert flagged.actions == ["do_not_pay_off_platform", "hand_to_human"]
+    assert "nicht von uns" in flagged.reply_de
+    assert "Paysafecard" in flagged.reply_de
+    clean = review_ticket(db, 44021, settings)
+    assert clean.fraud == []
 
 
 def test_ungrounded_replies_fail_the_policy(synced):

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from opsagent.agent.classify import classify
 from opsagent.agent.draft import CaseFile, critique, grounded, ungrounded
+from opsagent.agent.fraud import scan as scan_fraud
 from opsagent.settings import Settings
 from opsagent.warehouse import queries
 
@@ -23,6 +24,7 @@ class Review:
     latency_ms: float
     cost_eur: float
     drafter: str
+    fraud: list[dict]
 
 
 def review_ticket(db_path: Path, ticket_id: int, settings: Settings, drafter: str = "grounded") -> Review:
@@ -47,6 +49,13 @@ def review_ticket(db_path: Path, ticket_id: int, settings: Settings, drafter: st
             if intent in {"refund", "double_charge"}:
                 txns = queries.transactions(conn, order.order_id)
         events = queries.events_for(conn, ticket.email)
+        if order and order.email and order.email.lower() != (ticket.email or "").lower():
+            seen = {(event.metric_name, event.happened_at, event.subject) for event in events}
+            for event in queries.events_for(conn, order.email):
+                key = (event.metric_name, event.happened_at, event.subject)
+                if key not in seen:
+                    events.append(event)
+        fraud = scan_fraud(ticket, order, events)
     finally:
         conn.close()
 
@@ -62,6 +71,7 @@ def review_ticket(db_path: Path, ticket_id: int, settings: Settings, drafter: st
         requested_stock=requested,
         transactions=txns,
         settings=settings,
+        fraud=fraud,
     )
     render = grounded if drafter == "grounded" else ungrounded
     reply_de, reply_en, actions = render(case)
@@ -79,6 +89,7 @@ def review_ticket(db_path: Path, ticket_id: int, settings: Settings, drafter: st
         latency_ms=(time.perf_counter() - started) * 1000,
         cost_eur=0.0,
         drafter=drafter,
+        fraud=fraud,
     )
 
 

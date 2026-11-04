@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbor Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eceae4;
+    --ink: #141414;
+    --muted: #5f5b55;
+    --line: #d8d4cc;
+    --panel: #f6f5f2;
+    --white: #ffffff;
+    --black: #111111;
+    --hold: #8c2f2f;
+    --ok: #1d6b45;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--bg);
+    font: 15px/1.5 "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  button, summary { font: inherit; color: inherit; }
+  header {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 0 22px;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 210px; }
+  .mark {
+    width: 22px; height: 22px; background: var(--black); color: white;
+    display: grid; place-items: center; font-size: 12px; font-weight: 600;
+  }
+  .name { font-weight: 600; letter-spacing: 0.16em; font-size: 13px; }
+  .product { color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+  .howto { margin: 0; color: var(--muted); font-size: 13px; flex: 1; }
+  .lang { display: flex; border: 1px solid var(--line); }
+  .lang button {
+    border: 0; background: transparent; padding: 7px 12px; cursor: pointer; letter-spacing: 0.08em; font-size: 12px; font-weight: 600;
+  }
+  .lang button[aria-pressed="true"] { background: var(--black); color: white; }
+  .app {
+    display: flex;
+    height: calc(100vh - 64px);
+    min-width: 0;
+  }
+  #inbox { width: 300px; flex: 0 0 auto; }
+  .work { flex: 1 1 auto; min-width: 280px; }
+  #rail { width: 400px; flex: 0 0 auto; }
+  aside, .work, .rail { min-height: 0; overflow: auto; }
+  aside { background: var(--panel); }
+  .rail { background: var(--panel); padding: 22px 20px 48px; }
+  .split {
+    flex: 0 0 10px;
+    width: 10px;
+    cursor: col-resize;
+    touch-action: none;
+    position: relative;
+    background: transparent;
+  }
+  .split::before {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 4px;
+    width: 1px;
+    background: var(--line);
+  }
+  .split::after {
+    content: "";
+    position: absolute;
+    top: 50%; left: 2px;
+    width: 6px; height: 36px;
+    transform: translateY(-50%);
+    border-left: 1px solid #b7b2aa;
+    border-right: 1px solid #b7b2aa;
+    background: var(--bg);
+  }
+  .split:hover::before, .split:focus::before, .split.dragging::before {
+    left: 3px; width: 3px; background: var(--black);
+  }
+  .pane-label {
+    margin: 0; padding: 18px 18px 8px;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 600;
+  }
+  .rail .pane-label { padding: 0 0 4px; }
+  .proof-hint { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+  button.ticket {
+    display: block; width: 100%; text-align: left; background: transparent;
+    border: 0; border-bottom: 1px solid var(--line); padding: 14px 18px; cursor: pointer;
+  }
+  button.ticket[aria-pressed="true"] { background: var(--white); box-shadow: inset 3px 0 0 var(--black); }
+  .who { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+  .tag { font-weight: 500; font-size: 12px; color: var(--muted); }
+  .subject { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+  .work { padding: 28px 36px 56px; }
+  .steps { display: flex; gap: 22px; list-style: none; margin: 0 0 26px; padding: 0; }
+  .steps li { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+  .steps span {
+    width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line);
+    display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--ink); background: white;
+  }
+  .kicker { margin: 0 0 6px; letter-spacing: 0.12em; text-transform: uppercase; font-size: 11px; color: var(--muted); font-weight: 600; }
+  h1 { margin: 0 0 18px; font-size: 32px; font-weight: 600; letter-spacing: -0.03em; }
+  .card { background: var(--white); border: 1px solid var(--line); padding: 18px 20px; margin: 0 0 14px; }
+  .card h2 { margin: 0 0 10px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .customer { white-space: pre-wrap; margin: 0; }
+  .draft-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .badge { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--line); padding: 4px 8px; }
+  .reply { white-space: pre-wrap; margin: 12px 0 0; font-size: 15.5px; }
+  .suggest { margin: 8px 0 0; padding: 0; list-style: none; }
+  .suggest li { padding: 7px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  .proof { list-style: none; margin: 0; padding: 0; }
+  .proof li {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 12px;
+    position: relative;
+    padding-bottom: 18px;
+  }
+  .proof li::before {
+    content: "";
+    position: absolute;
+    left: 13px; top: 28px; bottom: 0;
+    width: 1px;
+    background: var(--line);
+  }
+  .proof li:last-child::before { display: none; }
+  .proof .n {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--black); color: white;
+    display: grid; place-items: center;
+    font-size: 12px; font-weight: 600;
+    position: relative; z-index: 1;
+  }
+  .step-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .step-title { margin: 2px 0 0; font-weight: 600; font-size: 15px; }
+  .sys { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+  .status { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .status.hold { color: var(--hold); }
+  .status.ok { color: var(--ok); }
+  .fact { margin: 6px 0 0; font-size: 14px; }
+  .fact + .fact { margin-top: 4px; }
+  details { margin-top: 18px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+  pre.note { white-space: pre-wrap; font: 13px/1.45 "IBM Plex Sans", sans-serif; color: var(--muted); }
+  .empty { color: var(--muted); }
+  @media (max-width: 900px) {
+    .howto { display: none; }
+    .app { flex-direction: column; height: auto; }
+    #inbox, #rail, .work { width: auto !important; flex: none; }
+    .split { display: none; }
+    .rail { border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 720px) {
+    header { height: auto; padding: 14px; flex-wrap: wrap; gap: 12px; }
+    .work { padding: 20px 16px 40px; }
+    h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="mark">H</span>
+    <span class="name">HARBOR</span>
+    <span class="product" id="productLabel">Agent</span>
+  </div>
+  <p class="howto" id="howto"></p>
+  <div class="lang" role="group" id="lang" aria-label="Language">
+    <button type="button" id="lang-en" aria-pressed="true">EN</button>
+    <button type="button" id="lang-de" aria-pressed="false">DE</button>
+  </div>
+</header>
+<div class="app" id="app">
+  <aside id="inbox">
+    <p class="pane-label" id="inboxLabel">Inbox</p>
+    <div id="list"></div>
+  </aside>
+  <div class="split" id="split-inbox" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Resize inbox"></div>
+  <main class="work" id="work">
+    <p class="empty" id="loading">Opening the inbox…</p>
+  </main>
+  <div class="split" id="split-proof" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Resize proof"></div>
+  <aside class="rail" id="rail" hidden>
+    <p class="pane-label" id="checkedLabel">How the agent got here</p>
+    <p class="proof-hint" id="proofHint"></p>
+    <ol class="proof" id="sources"></ol>
+  </aside>
+</div>
+<script>
+const copy = {
+  en: {
+    product: "Agent",
+    howto: "Choose a ticket on the left. The draft on the right is not sent.",
+    inbox: "Inbox",
+    loading: "Opening the inbox…",
+    steps: ["Choose a ticket", "Read the draft", "A person sends it"],
+    customer: "Customer wrote",
+    draft: "Draft reply",
+    notSent: "Not sent",
+    suggests: "The agent suggests",
+    checked: "How the agent got here",
+    proofHint: "Read from the top. One check at a time.",
+    splitInbox: "Drag to resize the inbox",
+    splitProof: "Drag to resize the proof",
+    pay: { paid: "paid", refunded: "already refunded", pending: "not paid yet", partially_refunded: "partly refunded", voided: "cancelled" },
+    issues: {
+      QTY_OVER: "The bill counts more pieces than were ordered.",
+      OVER_PO_VALUE: "The bill amount is higher than the purchase order."
+    },
+    noFraud: "Nothing in the ticket, the shop, or the emails asks for a payment code, a gift card, or a fee outside the shop.",
+    checkThis: "Check this",
+    pipeline: [
+      { title: "Read the message", system: "Helpdesk · Zendesk" },
+      { title: "Check for fraud", system: "Ticket, shop, and email" },
+      { title: "Look up the order", system: "Shop · Shopify" },
+      { title: "Check emails already sent", system: "Marketing · Klaviyo" },
+      { title: "Check the supplier", system: "Purchase order · Anvyl and Sage" },
+      { title: "Decide what to offer", system: "Rules, not a guess" },
+      { title: "Write the draft", system: "Nothing is sent" }
+    ],
+    read: "Read",
+    found: "Found",
+    missing: "Missing",
+    already: "Already sent",
+    none: "None",
+    held: "On hold",
+    clear: "Clear",
+    suggested: "Suggested",
+    asked: (name, intent, order) => `${name} wrote in. This is about ${intent}. Order ${order}.`,
+    noShop: "No matching order was found in the shop.",
+    shipped: "It has been shipped.",
+    notShipped: "It has not been shipped.",
+    stockOut: "This size is out of stock.",
+    stockIn: (n) => `${n} of this size are in stock.`,
+    orderLine: (name, pay, ship, stock) => `Order ${name} is ${pay}. ${ship} ${stock}`,
+    mailLine: (name, date) => `“${name}” was sent on ${date}.`,
+    noEmail: "No marketing email is on file for this customer.",
+    noSupply: "No supplier order is open for this item. No bill is on hold.",
+    supplyHold: (po, supplier) => `Purchase order ${po} with ${supplier} is on hold.`,
+    supplyClear: (po, supplier) => `Purchase order ${po} with ${supplier} matches the bill. Nothing is on hold.`,
+    noDate: "Because of that, the agent will not promise a delivery date.",
+    draftEnd: "The draft is in the middle. It has not been sent. The agent did not change the order, the emails, or the bill.",
+    team: "Note for the team",
+    person: "Nothing here is sent. A colleague confirms first.",
+    intents: { where_is_order: "Delivery", refund: "Refund", exchange_size: "Size", double_charge: "Payment", product_complaint: "Product", cancel_marketing: "Emails", fraud: "Fraud", other: "Other" },
+    actions: {
+      offer_wait_with_discount: "Offer to wait, with 15% once it ships",
+      offer_size_exchange: "Offer a size that is in stock",
+      offer_refund: "Offer a full refund",
+      do_not_promise_date: "Do not promise a delivery date",
+      do_not_resend_delay_email: "Do not send the delay email again",
+      do_not_refund_again: "Do not refund a second time",
+      escalate_if_payout_missing: "Payments checks if the money is missing",
+      offer_exchange: "Offer the size exchange",
+      wait_for_customer_confirm: "Wait until the customer confirms",
+      escalate_payments: "Hand this to payments",
+      do_not_confirm_double_charge: "Do not confirm a second charge",
+      offer_replacement_or_refund: "Offer a replacement or a refund",
+      no_medical_advice: "Do not give medical advice",
+      keep_order: "Keep the order as it is",
+      queue_marketing_suppression: "Ask a colleague to stop the emails",
+      hand_to_human: "A colleague takes this ticket",
+      wait_for_human_refund: "A colleague confirms the refund",
+      do_not_pay_off_platform: "Do not pay the fee or send a payment code"
+    }
+  },
+  de: {
+    product: "Agent",
+    howto: "Links ein Ticket wählen. Der Entwurf wird nicht gesendet.",
+    inbox: "Posteingang",
+    loading: "Posteingang wird geöffnet…",
+    steps: ["Ticket wählen", "Entwurf lesen", "Ein Mensch sendet"],
+    customer: "Kunde schrieb",
+    draft: "Antwortentwurf",
+    notSent: "Nicht gesendet",
+    suggests: "Der Agent schlägt vor",
+    checked: "So ist der Agent vorgegangen",
+    proofHint: "Von oben lesen. Eine Prüfung nach der anderen.",
+    splitInbox: "Ziehen, um den Posteingang zu verändern",
+    splitProof: "Ziehen, um den Nachweis zu verändern",
+    pay: { paid: "bezahlt", refunded: "bereits erstattet", pending: "noch nicht bezahlt", partially_refunded: "teilweise erstattet", voided: "storniert" },
+    issues: {
+      QTY_OVER: "Die Rechnung zählt mehr Stück, als bestellt wurden.",
+      OVER_PO_VALUE: "Der Rechnungsbetrag liegt über der Bestellung."
+    },
+    noFraud: "Weder im Ticket noch im Shop noch in den E-Mails wird ein Zahlencode, ein Gutschein oder eine Gebühr außerhalb des Shops verlangt.",
+    checkThis: "Prüfen",
+    pipeline: [
+      { title: "Nachricht lesen", system: "Helpdesk · Zendesk" },
+      { title: "Auf Betrug prüfen", system: "Ticket, Shop und E-Mail" },
+      { title: "Bestellung nachsehen", system: "Shop · Shopify" },
+      { title: "Gesendete E-Mails prüfen", system: "Marketing · Klaviyo" },
+      { title: "Lieferanten prüfen", system: "Bestellung · Anvyl und Sage" },
+      { title: "Entscheiden, was angeboten wird", system: "Regeln, keine Vermutung" },
+      { title: "Entwurf schreiben", system: "Nichts wird gesendet" }
+    ],
+    read: "Gelesen",
+    found: "Gefunden",
+    missing: "Fehlt",
+    already: "Schon gesendet",
+    none: "Keine",
+    held: "Gehalten",
+    clear: "In Ordnung",
+    suggested: "Vorschlag",
+    asked: (name, intent, order) => `${name} hat geschrieben. Es geht um: ${intent}. Bestellung ${order}.`,
+    noShop: "Im Shop wurde keine passende Bestellung gefunden.",
+    shipped: "Sie wurde versendet.",
+    notShipped: "Sie wurde noch nicht versendet.",
+    stockOut: "Diese Größe ist nicht auf Lager.",
+    stockIn: (n) => `${n} Stück dieser Größe sind auf Lager.`,
+    orderLine: (name, pay, ship, stock) => `Bestellung ${name} ist ${pay}. ${ship} ${stock}`,
+    mailLine: (name, date) => `„${name}“ ging am ${date} raus.`,
+    noEmail: "Zu dieser Kundin liegt keine Marketing-E-Mail vor.",
+    noSupply: "Zu diesem Artikel liegt keine offene Lieferantenbestellung. Keine Rechnung ist gehalten.",
+    supplyHold: (po, supplier) => `Lieferantenbestellung ${po} bei ${supplier} ist gehalten.`,
+    supplyClear: (po, supplier) => `Lieferantenbestellung ${po} bei ${supplier} passt zur Rechnung. Nichts ist gehalten.`,
+    noDate: "Deshalb sagt der Agent keinen Liefertermin zu.",
+    draftEnd: "Der Entwurf steht in der Mitte. Er wurde nicht gesendet. Der Agent hat die Bestellung, die E-Mails und die Rechnung nicht verändert.",
+    team: "Notiz für das Team",
+    person: "Hier wird nichts gesendet. Eine Kollegin bestätigt zuerst.",
+    intents: { where_is_order: "Lieferung", refund: "Erstattung", exchange_size: "Größe", double_charge: "Zahlung", product_complaint: "Produkt", cancel_marketing: "E-Mails", fraud: "Betrug", other: "Sonstiges" },
+    actions: {
+      offer_wait_with_discount: "Warten anbieten, mit 15 %, sobald es rausgeht",
+      offer_size_exchange: "Eine Größe anbieten, die auf Lager ist",
+      offer_refund: "Vollen Betrag erstatten anbieten",
+      do_not_promise_date: "Keinen Liefertermin zusagen",
+      do_not_resend_delay_email: "Die Verzögerungsmail nicht noch einmal senden",
+      do_not_refund_again: "Nicht ein zweites Mal erstatten",
+      escalate_if_payout_missing: "Payment prüft, ob das Geld fehlt",
+      offer_exchange: "Den Größentausch anbieten",
+      wait_for_customer_confirm: "Warten, bis der Kunde bestätigt",
+      escalate_payments: "An Payment geben",
+      do_not_confirm_double_charge: "Keine zweite Abbuchung bestätigen",
+      offer_replacement_or_refund: "Ersatz oder Erstattung anbieten",
+      no_medical_advice: "Keinen medizinischen Rat geben",
+      keep_order: "Die Bestellung so lassen",
+      queue_marketing_suppression: "Eine Kollegin bittet, die Mails zu stoppen",
+      hand_to_human: "Eine Kollegin übernimmt das Ticket",
+      wait_for_human_refund: "Eine Kollegin bestätigt die Erstattung",
+      do_not_pay_off_platform: "Die Gebühr nicht zahlen und keinen Zahlencode schicken"
+    }
+  }
+};
+
+let lang = localStorage.getItem("harbor-lang") || "en";
+let tickets = [];
+let current = null;
+
+const list = document.querySelector("#list");
+const work = document.querySelector("#work");
+const rail = document.querySelector("#rail");
+const sources = document.querySelector("#sources");
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]));
+}
+function t() { return copy[lang]; }
+function day(value) { return String(value || "").slice(0, 10); }
+
+function applyChrome() {
+  document.documentElement.lang = lang === "de" ? "de" : "en";
+  document.querySelector("#productLabel").textContent = t().product;
+  document.querySelector("#howto").textContent = t().howto;
+  document.querySelector("#inboxLabel").textContent = t().inbox;
+  document.querySelector("#checkedLabel").textContent = t().checked;
+  document.querySelector("#proofHint").textContent = t().proofHint;
+  document.querySelector("#split-inbox").setAttribute("aria-label", t().splitInbox);
+  document.querySelector("#split-proof").setAttribute("aria-label", t().splitProof);
+  document.querySelector("#lang-en").setAttribute("aria-pressed", lang === "en" ? "true" : "false");
+  document.querySelector("#lang-de").setAttribute("aria-pressed", lang === "de" ? "true" : "false");
+  document.querySelector("#lang").setAttribute("aria-label", lang === "de" ? "Sprache" : "Language");
+}
+
+function step(number, title, system, status, statusClass, facts) {
+  const lines = facts.filter(Boolean).map((line) => `<p class="fact">${esc(line)}</p>`).join("");
+  return `<li>
+    <span class="n">${number}</span>
+    <div>
+      <div class="step-top"><p class="step-title">${esc(title)}</p><p class="status ${statusClass}">${esc(status)}</p></div>
+      <p class="sys">${esc(system)}</p>
+      ${lines}
+    </div>
+  </li>`;
+}
+
+function proofSteps(ticket) {
+  const text = t();
+  const intent = text.intents[ticket.intent] || text.intents.other;
+  const shop = ticket.shopify;
+  const supply = ticket.supply;
+  const mails = (ticket.klaviyo || []).filter((row) => row.campaign || row.metric === "Received Email" || row.metric === "Refunded Order");
+  const hold = supply && supply.decision === "INVESTIGATE";
+  const codes = supply && supply.issue_codes ? supply.issue_codes.split(",").map((code) => code.trim()).filter(Boolean) : [];
+
+  const shopFacts = shop
+    ? [text.orderLine(
+        shop.order_name,
+        text.pay[shop.financial_status] || shop.financial_status,
+        shop.fulfillment_status === "fulfilled" ? text.shipped : text.notShipped,
+        shop.available > 0 ? text.stockIn(shop.available) : text.stockOut
+      ), shop.title || ""]
+    : [text.noShop];
+
+  const mailFacts = mails.length
+    ? mails.slice(-3).map((row) => text.mailLine(row.campaign || row.subject || row.metric, day(row.happened_at)))
+    : [text.noEmail];
+
+  let supplyFacts;
+  let supplyStatus;
+  let supplyClass;
+  if (!supply) {
+    supplyFacts = [text.noSupply];
+    supplyStatus = text.none;
+    supplyClass = "";
+  } else if (hold) {
+    supplyFacts = [text.supplyHold(supply.order_number, supply.supplier_name)]
+      .concat(codes.map((code) => text.issues[code] || code))
+      .concat([text.noDate]);
+    supplyStatus = text.held;
+    supplyClass = "hold";
+  } else {
+    supplyFacts = [text.supplyClear(supply.order_number, supply.supplier_name)];
+    supplyStatus = text.clear;
+    supplyClass = "ok";
+  }
+
+  const decisions = (ticket.actions || []).map((key) => text.actions[key] || key);
+  const flags = ticket.fraud || [];
+  const fraudFacts = flags.length
+    ? flags.map((item) => `${item.source}: ${lang === "de" ? item.text_de : item.text_en}`)
+    : [text.noFraud];
+  const pipe = text.pipeline;
+  return [
+    step(1, pipe[0].title, pipe[0].system, text.read, "", [text.asked(ticket.first_name, intent, ticket.order_name || "—")]),
+    step(2, pipe[1].title, pipe[1].system, flags.length ? text.checkThis : text.clear, flags.length ? "hold" : "ok", fraudFacts),
+    step(3, pipe[2].title, pipe[2].system, shop ? text.found : text.missing, shop ? "ok" : "hold", shopFacts),
+    step(4, pipe[3].title, pipe[3].system, mails.length ? text.already : text.none, "", mailFacts),
+    step(5, pipe[4].title, pipe[4].system, supplyStatus, supplyClass, supplyFacts),
+    step(6, pipe[5].title, pipe[5].system, text.suggested, "", decisions),
+    step(7, pipe[6].title, pipe[6].system, text.notSent, "", [text.draftEnd])
+  ].join("");
+}
+
+function renderList() {
+  list.innerHTML = "";
+  for (const ticket of tickets) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "ticket";
+    button.setAttribute("aria-pressed", current && current.ticket_id === ticket.ticket_id ? "true" : "false");
+    const label = t().intents[ticket.intent] || t().intents.other;
+    button.innerHTML = `<span class="who">${esc(ticket.first_name)} <span class="tag">${esc(label)}</span></span><span class="subject">${esc(ticket.order_name)} · ${esc(ticket.subject)}</span>`;
+    button.addEventListener("click", () => openTicket(ticket.ticket_id, button));
+    list.appendChild(button);
+  }
+}
+
+function renderWork(ticket) {
+  const reply = lang === "de" ? ticket.reply_de : ticket.reply_en;
+  const actions = (ticket.actions || []).map((key) => `<li>${esc(t().actions[key] || key)}</li>`).join("");
+  const steps = t().steps.map((label, index) => `<li><span>${index + 1}</span>${esc(label)}</li>`).join("");
+  work.innerHTML = `
+    <ol class="steps">${steps}</ol>
+    <p class="kicker">${esc(ticket.brand || "")}</p>
+    <h1>${esc(ticket.first_name)} · ${esc(ticket.order_name || "")}</h1>
+    <article class="card">
+      <h2>${esc(t().customer)}</h2>
+      <p class="customer">${esc(ticket.customer_message || ticket.subject)}</p>
+    </article>
+    <article class="card">
+      <div class="draft-head"><h2>${esc(t().draft)}</h2><span class="badge">${esc(t().notSent)}</span></div>
+      <p class="reply">${esc(reply)}</p>
+    </article>
+    <article class="card">
+      <h2>${esc(t().suggests)}</h2>
+      <ul class="suggest">${actions}</ul>
+      <p class="empty">${esc(t().person)}</p>
+    </article>
+    <details>
+      <summary>${esc(t().team)}</summary>
+      <pre class="note">${esc(ticket.internal_note || "")}</pre>
+    </details>`;
+  sources.innerHTML = proofSteps(ticket);
+  rail.hidden = false;
+}
+
+function bindSplit(handle, pane, edge) {
+  const key = pane.id;
+  function setWidth(next) {
+    const appWidth = document.querySelector("#app").getBoundingClientRect().width;
+    const other = pane.id === "inbox" ? rail.getBoundingClientRect().width : inboxPane.getBoundingClientRect().width;
+    const max = Math.max(220, appWidth - other - 320 - 20);
+    const width = Math.round(Math.max(220, Math.min(next, max)));
+    pane.style.width = width + "px";
+    handle.setAttribute("aria-valuenow", String(width));
+    const saved = JSON.parse(localStorage.getItem("harbor-panes") || "{}");
+    saved[key] = width;
+    localStorage.setItem("harbor-panes", JSON.stringify(saved));
+  }
+  handle.addEventListener("pointerdown", (event) => {
+    if (window.matchMedia("(max-width: 900px)").matches) return;
+    event.preventDefault();
+    handle.setPointerCapture(event.pointerId);
+    handle.classList.add("dragging");
+    const startX = event.clientX;
+    const startW = pane.getBoundingClientRect().width;
+    function move(e) {
+      const dx = e.clientX - startX;
+      setWidth(edge === "left" ? startW + dx : startW - dx);
+    }
+    function up() {
+      handle.classList.remove("dragging");
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", up);
+    }
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", up);
+  });
+  handle.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const currentWidth = pane.getBoundingClientRect().width;
+    const delta = event.key === "ArrowRight" ? 24 : -24;
+    setWidth(edge === "left" ? currentWidth + delta : currentWidth - delta);
+  });
+  handle.addEventListener("dblclick", () => setWidth(pane.id === "inbox" ? 300 : 400));
+}
+
+const inboxPane = document.querySelector("#inbox");
+bindSplit(document.querySelector("#split-inbox"), inboxPane, "left");
+bindSplit(document.querySelector("#split-proof"), rail, "right");
+const savedPanes = JSON.parse(localStorage.getItem("harbor-panes") || "{}");
+if (savedPanes.inbox) inboxPane.style.width = savedPanes.inbox + "px";
+if (savedPanes.rail) rail.style.width = savedPanes.rail + "px";
+
+async function openTicket(id) {
+  const ticket = await (await fetch("/api/tickets/" + id)).json();
+  current = ticket;
+  renderList();
+  renderWork(ticket);
+}
+
+function setLang(next) {
+  lang = next;
+  localStorage.setItem("harbor-lang", lang);
+  applyChrome();
+  renderList();
+  if (current) renderWork(current);
+}
+
+document.querySelector("#lang-en").addEventListener("click", () => setLang("en"));
+document.querySelector("#lang-de").addEventListener("click", () => setLang("de"));
+
+async function main() {
+  applyChrome();
+  document.querySelector("#loading").textContent = t().loading;
+  const rows = await (await fetch("/api/tickets")).json();
+  tickets = rows;
+  renderList();
+  await openTicket(44021);
+}
+main();
+</script>
+</body>
+</html>

@@ -35,6 +35,7 @@ class Order:
     delivered_at: str | None
     tracking_number: str | None
     lines: list[Line]
+    email: str = ""
 
 
 @dataclass
@@ -114,6 +115,7 @@ def get_order(conn, order_name: str | None) -> Order | None:
         delivered_at=row["delivered_at"],
         tracking_number=row["tracking_number"],
         lines=lines,
+        email=row["email"] or "",
     )
 
 

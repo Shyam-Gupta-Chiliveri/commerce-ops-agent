@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("fraud", ("paysafecard", "zollgebühr", "zollgebuehr", "customs fee", "bitcoin", "western union")),
     ("double_charge", ("zweimal abgebucht", "doppelt abgebucht", "double charge")),
     ("cancel_marketing", ("keine mails", "newsletter", "abmelden", "unsubscribe")),
     ("product_complaint", ("ausgelaufen", "kaputt", "defekt")),
