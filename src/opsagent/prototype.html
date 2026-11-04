@@ -19,6 +19,18 @@
     --hold: #8c2f2f;
     --ok: #1d6b45;
   }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #121212;
+    --ink: #f3f1ec;
+    --muted: #b7b1a8;
+    --line: #34322e;
+    --panel: #1b1b1b;
+    --white: #1f1f1f;
+    --black: #f3f1ec;
+    --hold: #f0a8a8;
+    --ok: #8dcea8;
+  }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
@@ -45,11 +57,20 @@
   .name { font-weight: 600; letter-spacing: 0.16em; font-size: 13px; }
   .product { color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
   .howto { margin: 0; color: var(--muted); font-size: 13px; flex: 1; }
+  .desk, .lang, .theme { border: 1px solid var(--line); }
+  .desk, .lang { display: flex; }
+  .tools { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .desk button, .theme {
+    border: 0; background: transparent; padding: 7px 12px; cursor: pointer; font-size: 13px; font-weight: 600;
+  }
+  .desk button[aria-pressed="true"] { background: var(--black); color: var(--bg); }
+  .theme { letter-spacing: 0.06em; font-size: 12px; }
+  html[data-theme="dark"] .mark { color: #141414; }
   .lang { display: flex; border: 1px solid var(--line); }
   .lang button {
     border: 0; background: transparent; padding: 7px 12px; cursor: pointer; letter-spacing: 0.08em; font-size: 12px; font-weight: 600;
   }
-  .lang button[aria-pressed="true"] { background: var(--black); color: white; }
+  .lang button[aria-pressed="true"] { background: var(--black); color: var(--bg); }
   .app {
     display: flex;
     height: calc(100vh - 64px);
@@ -108,8 +129,20 @@
   .steps li { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
   .steps span {
     width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line);
-    display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--ink); background: white;
+    display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--ink);     background: var(--white);
   }
+  .sheet { height: calc(100vh - 64px); overflow: auto; padding: 28px 40px 72px; }
+  .sheet[hidden] { display: none; }
+  .sheet h1 { font-size: 28px; }
+  .sheet .lead { margin: -8px 0 22px; color: var(--muted); max-width: 640px; }
+  .bill { background: var(--white); border: 1px solid var(--line); padding: 16px 18px; margin: 0 0 12px; max-width: 760px; }
+  .bill header { height: auto; padding: 0; border: 0; background: transparent; gap: 12px; margin-bottom: 8px; }
+  .bill h2 { margin: 0; font-size: 16px; letter-spacing: 0; text-transform: none; color: var(--ink); }
+  .metric { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 760px; margin: 0 0 18px; }
+  .metric div { background: var(--white); border: 1px solid var(--line); padding: 14px 16px; }
+  .metric b { display: block; font-size: 22px; letter-spacing: -0.03em; }
+  .metric span, .issue { color: var(--muted); font-size: 13px; }
+  .issue { margin: 0 0 8px; }
   .kicker { margin: 0 0 6px; letter-spacing: 0.12em; text-transform: uppercase; font-size: 11px; color: var(--muted); font-weight: 600; }
   h1 { margin: 0 0 18px; font-size: 32px; font-weight: 600; letter-spacing: -0.03em; }
   .card { background: var(--white); border: 1px solid var(--line); padding: 18px 20px; margin: 0 0 14px; }
@@ -176,10 +209,18 @@
     <span class="name">HARBOR</span>
     <span class="product" id="productLabel">Agent</span>
   </div>
+  <nav class="desk" id="desk" aria-label="Work">
+    <button type="button" id="desk-service" aria-pressed="true">Service</button>
+    <button type="button" id="desk-supply" aria-pressed="false">Supply</button>
+    <button type="button" id="desk-report" aria-pressed="false">Report</button>
+  </nav>
   <p class="howto" id="howto"></p>
-  <div class="lang" role="group" id="lang" aria-label="Language">
-    <button type="button" id="lang-en" aria-pressed="true">EN</button>
-    <button type="button" id="lang-de" aria-pressed="false">DE</button>
+  <div class="tools">
+    <button type="button" id="theme" aria-pressed="false">Dark</button>
+    <div class="lang" role="group" id="lang" aria-label="Language">
+      <button type="button" id="lang-en" aria-pressed="true">EN</button>
+      <button type="button" id="lang-de" aria-pressed="false">DE</button>
+    </div>
   </div>
 </header>
 <div class="app" id="app">
@@ -198,11 +239,39 @@
     <ol class="proof" id="sources"></ol>
   </aside>
 </div>
+<main class="sheet" id="desk-page" hidden></main>
 <script>
 const copy = {
   en: {
     product: "Agent",
     howto: "Choose a ticket on the left. The draft on the right is not sent.",
+    service: "Service",
+    supply: "Supply",
+    report: "Report",
+    dark: "Dark",
+    light: "Light",
+    supplyTitle: "Supplier bills",
+    supplyLead: "The agent compares each supplier bill with the purchase order. Hold means do not pay. This page does not pay anything.",
+    hold: "Do not pay",
+    canPay: "A person can pay",
+    ordered: "Ordered",
+    billed: "Billed",
+    reportTitle: "What the agent did",
+    reportLead: "A colleague can read this without opening the code. Nothing here was sent or paid.",
+    loaded: "What was loaded",
+    serviceResult: "Customer service",
+    supplyResult: "Supply chain",
+    invoiceResult: "Supplier invoice queue",
+    openTickets: "Open tickets",
+    draftsPassed: "Drafts that passed",
+    cost: "Model cost",
+    holdCount: "Bills to hold",
+    payCount: "Bills a person can pay",
+    documents: "Invoices",
+    gross: "Gross on file",
+    waiting: "A customer is waiting because a supplier bill is on hold.",
+    duplicate: "A duplicate invoice is still in the gross until a person removes it.",
+    noPay: "Nothing on this page is paid.",
     inbox: "Inbox",
     loading: "Opening the inbox…",
     steps: ["Choose a ticket", "Read the draft", "A person sends it"],
@@ -279,6 +348,33 @@ const copy = {
   de: {
     product: "Agent",
     howto: "Links ein Ticket wählen. Der Entwurf wird nicht gesendet.",
+    service: "Service",
+    supply: "Lieferkette",
+    report: "Bericht",
+    dark: "Dunkel",
+    light: "Hell",
+    supplyTitle: "Lieferantenrechnungen",
+    supplyLead: "Der Agent vergleicht jede Lieferantenrechnung mit der Bestellung. Gehalten heißt: nicht zahlen. Diese Seite zahlt nichts.",
+    hold: "Nicht zahlen",
+    canPay: "Eine Person kann zahlen",
+    ordered: "Bestellt",
+    billed: "Berechnet",
+    reportTitle: "Was der Agent getan hat",
+    reportLead: "Eine Kollegin kann das lesen, ohne den Code zu öffnen. Hier wurde nichts gesendet und nichts gezahlt.",
+    loaded: "Was geladen wurde",
+    serviceResult: "Kundenservice",
+    supplyResult: "Lieferkette",
+    invoiceResult: "Warteschlange der Lieferantenrechnungen",
+    openTickets: "Offene Tickets",
+    draftsPassed: "Entwürfe bestanden",
+    cost: "Modellkosten",
+    holdCount: "Rechnungen halten",
+    payCount: "Eine Person kann zahlen",
+    documents: "Rechnungen",
+    gross: "Brutto in den Belegen",
+    waiting: "Eine Kundin wartet, weil eine Lieferantenrechnung gehalten ist.",
+    duplicate: "Eine doppelte Rechnung bleibt in der Summe, bis eine Person sie entfernt.",
+    noPay: "Auf dieser Seite wird nichts gezahlt.",
     inbox: "Posteingang",
     loading: "Posteingang wird geöffnet…",
     steps: ["Ticket wählen", "Entwurf lesen", "Ein Mensch sendet"],
@@ -355,6 +451,10 @@ const copy = {
 };
 
 let lang = localStorage.getItem("harbor-lang") || "en";
+let theme = localStorage.getItem("harbor-theme") || "light";
+let desk = "service";
+let supplyRows = null;
+let reportData = null;
 let tickets = [];
 let current = null;
 
@@ -373,6 +473,13 @@ function applyChrome() {
   document.documentElement.lang = lang === "de" ? "de" : "en";
   document.querySelector("#productLabel").textContent = t().product;
   document.querySelector("#howto").textContent = t().howto;
+  document.querySelector("#desk-service").textContent = t().service;
+  document.querySelector("#desk-supply").textContent = t().supply;
+  document.querySelector("#desk-report").textContent = t().report;
+  const dark = theme === "dark";
+  document.documentElement.dataset.theme = theme;
+  document.querySelector("#theme").setAttribute("aria-pressed", dark ? "true" : "false");
+  document.querySelector("#theme").textContent = dark ? t().light : t().dark;
   document.querySelector("#inboxLabel").textContent = t().inbox;
   document.querySelector("#checkedLabel").textContent = t().checked;
   document.querySelector("#proofHint").textContent = t().proofHint;
@@ -558,10 +665,116 @@ function setLang(next) {
   applyChrome();
   renderList();
   if (current) renderWork(current);
+  if (desk === "supply") renderSupply();
+  if (desk === "report") renderReport();
+}
+
+function money(value) {
+  const number = Number(value || 0);
+  return number.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function qty(value) {
+  const number = Number(value || 0);
+  return Number.isInteger(number) ? String(number) : String(number);
+}
+
+function renderSupply() {
+  const page = document.querySelector("#desk-page");
+  if (!supplyRows) {
+    page.innerHTML = `<p class="empty">${esc(t().loading)}</p>`;
+    return;
+  }
+  const cards = supplyRows.map((row) => {
+    const hold = row.decision === "INVESTIGATE";
+    const reasons = (lang === "de" ? row.reasons_de : row.reasons_en).map((line) => `<p class="fact">${esc(line)}</p>`).join("");
+    return `<article class="bill">
+      <header><h2>${esc(row.supplier)} · ${esc(row.po_number)}</h2><span class="status ${hold ? "hold" : "ok"}">${esc(hold ? t().hold : t().canPay)}</span></header>
+      <p class="issue">${esc(row.bill_id)} · ${esc(t().ordered)} ${esc(qty(row.ordered_qty))} · ${esc(t().billed)} ${esc(qty(row.billed_qty))} · EUR ${esc(money(row.ordered_net))} / ${esc(money(row.billed_net))}</p>
+      ${reasons || `<p class="fact">${esc(t().canPay)}. ${esc(t().noPay)}</p>`}
+    </article>`;
+  }).join("");
+  page.innerHTML = `<h1>${esc(t().supplyTitle)}</h1><p class="lead">${esc(t().supplyLead)}</p>${cards}`;
+}
+
+function renderReport() {
+  const page = document.querySelector("#desk-page");
+  if (!reportData) {
+    page.innerHTML = `<p class="empty">${esc(t().loading)}</p>`;
+    return;
+  }
+  const sync = reportData.sync;
+  const service = reportData.service;
+  const invoices = reportData.invoices;
+  const holds = supplyRows ? supplyRows.filter((row) => row.decision === "INVESTIGATE").length : 0;
+  const pays = supplyRows ? supplyRows.filter((row) => row.decision !== "INVESTIGATE").length : 0;
+  const waiting = (service.blocked || []).map((row) => `<p class="issue">${esc(row.first_name)} · ${esc(row.order_name)} · ${esc(row.blocked_po)} · ${esc(row.supplier_name)}</p>`).join("");
+  const issues = (invoices.issues || []).map((item) => `<p class="issue">${esc(item.count)} · ${esc(lang === "de" ? item.text_de : item.text_en)}</p>`).join("");
+  page.innerHTML = `
+    <h1>${esc(t().reportTitle)}</h1>
+    <p class="lead">${esc(t().reportLead)}</p>
+    <h2 class="kicker">${esc(t().loaded)}</h2>
+    <div class="metric">
+      <div><b>${esc(sync.shopify_orders)}</b><span>Shopify</span></div>
+      <div><b>${esc(sync.zendesk_tickets)}</b><span>Zendesk</span></div>
+      <div><b>${esc(sync.klaviyo_events)}</b><span>Klaviyo</span></div>
+      <div><b>${esc(sync.anvyl_orders)}</b><span>Anvyl</span></div>
+      <div><b>${esc(sync.sage_bills)}</b><span>Sage</span></div>
+      <div><b>${esc(sync.ap_reviews)}</b><span>${esc(t().documents)}</span></div>
+    </div>
+    <h2 class="kicker">${esc(t().serviceResult)}</h2>
+    <div class="metric">
+      <div><b>${esc(service.open_tickets)}</b><span>${esc(t().openTickets)}</span></div>
+      <div><b>${esc(service.grounded_passed)}/${esc(service.grounded_total)}</b><span>${esc(t().draftsPassed)}</span></div>
+      <div><b>EUR ${esc(money(service.cost_eur))}</b><span>${esc(t().cost)}</span></div>
+    </div>
+    <p class="issue">${esc(t().waiting)}</p>
+    ${waiting}
+    <h2 class="kicker">${esc(t().supplyResult)}</h2>
+    <div class="metric">
+      <div><b>${esc(holds)}</b><span>${esc(t().holdCount)}</span></div>
+      <div><b>${esc(pays)}</b><span>${esc(t().payCount)}</span></div>
+    </div>
+    <h2 class="kicker">${esc(t().invoiceResult)}</h2>
+    <div class="metric">
+      <div><b>${esc(invoices.documents)}</b><span>${esc(t().documents)}</span></div>
+      <div><b>${esc(invoices.investigate)}</b><span>${esc(t().holdCount)}</span></div>
+      <div><b>EUR ${esc(money(invoices.gross))}</b><span>${esc(t().gross)}</span></div>
+    </div>
+    ${issues}
+    <p class="issue">${esc(t().duplicate)}</p>`;
+}
+
+async function setDesk(next) {
+  desk = next;
+  for (const name of ["service", "supply", "report"]) {
+    document.querySelector("#desk-" + name).setAttribute("aria-pressed", desk === name ? "true" : "false");
+  }
+  document.querySelector("#app").hidden = desk !== "service";
+  const page = document.querySelector("#desk-page");
+  page.hidden = desk === "service";
+  if (desk === "supply") {
+    if (!supplyRows) supplyRows = await (await fetch("/api/supply")).json();
+    renderSupply();
+  }
+  if (desk === "report") {
+    if (!supplyRows) supplyRows = await (await fetch("/api/supply")).json();
+    if (!reportData) reportData = await (await fetch("/api/report")).json();
+    renderReport();
+  }
 }
 
 document.querySelector("#lang-en").addEventListener("click", () => setLang("en"));
 document.querySelector("#lang-de").addEventListener("click", () => setLang("de"));
+document.querySelector("#theme").addEventListener("click", () => {
+  theme = theme === "dark" ? "light" : "dark";
+  localStorage.setItem("harbor-theme", theme);
+  applyChrome();
+  if (desk === "supply") renderSupply();
+  if (desk === "report") renderReport();
+});
+document.querySelector("#desk-service").addEventListener("click", () => setDesk("service"));
+document.querySelector("#desk-supply").addEventListener("click", () => setDesk("supply"));
+document.querySelector("#desk-report").addEventListener("click", () => setDesk("report"));
 
 async function main() {
   applyChrome();

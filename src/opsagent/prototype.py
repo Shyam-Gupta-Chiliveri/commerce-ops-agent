@@ -20,6 +20,22 @@ from opsagent.warehouse.queries import connect
 
 PAGE = Path(__file__).with_name("prototype.html").read_text(encoding="utf-8")
 
+ISSUE_TEXT = {
+    "QTY_OVER": ("The bill counts more pieces than were ordered.", "Die Rechnung zählt mehr Stück, als bestellt wurden."),
+    "OVER_PO_VALUE": ("The bill amount is higher than the purchase order.", "Der Rechnungsbetrag liegt über der Bestellung."),
+    "IBAN_SHARED": ("The same bank account appears on more than one supplier.", "Dieselbe Bankverbindung steht bei mehr als einem Lieferanten."),
+    "IBAN_INVALID": ("The bank account number is not valid.", "Die Bankverbindung ist ungültig."),
+    "ITEMS_NOT_ORDERED": ("The bill includes items that are not on the purchase order.", "Die Rechnung enthält Positionen, die nicht bestellt wurden."),
+    "NO_PO": ("The invoice has no purchase order.", "Auf der Rechnung fehlt die Bestellung."),
+    "PO_NO_VALUE": ("The purchase order has no amount.", "Die Bestellung hat keinen Betrag."),
+    "MISSING_FIELDS": ("Required fields are missing.", "Pflichtfelder fehlen."),
+    "NOT_AN_INVOICE": ("This file is not an invoice.", "Diese Datei ist keine Rechnung."),
+    "MATH_ERROR": ("The amounts on the invoice do not add up.", "Die Beträge auf der Rechnung gehen nicht auf."),
+    "VAT_ERROR": ("The tax amount does not match.", "Die Steuer stimmt nicht."),
+    "DUPLICATE": ("This invoice appears twice.", "Diese Rechnung kommt doppelt vor."),
+    "HAS_DUPLICATE": ("A duplicate of this invoice is still in the queue.", "Ein Duplikat dieser Rechnung liegt noch in der Warteschlange."),
+}
+
 
 def _prepare(settings: Settings):
     VAR_DIR.mkdir(parents=True, exist_ok=True)
@@ -55,6 +71,125 @@ def create_prototype(settings: Settings | None = None) -> FastAPI:
             "ap_reviews": stats.ap_reviews,
             "grounded_passed": grounded.passed,
             "grounded_total": grounded.total,
+        }
+
+    def _reasons(codes: str | None) -> tuple[list[str], list[str]]:
+        english, german = [], []
+        for code in (codes or "").split(","):
+            code = code.strip()
+            if not code:
+                continue
+            pair = ISSUE_TEXT.get(code)
+            english.append(pair[0] if pair else code)
+            german.append(pair[1] if pair else code)
+        return english, german
+
+    @app.get("/api/supply")
+    def supply():
+        conn = connect(db)
+        try:
+            rows = conn.execute(
+                """
+                SELECT br.bill_id, br.po_number, br.decision, br.issue_codes,
+                       br.ordered_qty, br.billed_qty, br.ordered_net, br.billed_net,
+                       sb.vendor_name, sb.sage_status
+                FROM bill_reviews br
+                LEFT JOIN sage_bills sb ON sb.bill_id = br.bill_id
+                ORDER BY CASE WHEN br.decision = 'INVESTIGATE' THEN 0 ELSE 1 END, br.bill_id
+                """
+            ).fetchall()
+        finally:
+            conn.close()
+        payload = []
+        for row in rows:
+            english, german = _reasons(row["issue_codes"])
+            payload.append(
+                {
+                    "bill_id": row["bill_id"],
+                    "po_number": row["po_number"],
+                    "supplier": row["vendor_name"] or "",
+                    "decision": row["decision"],
+                    "accounts_status": row["sage_status"] or "",
+                    "ordered_qty": row["ordered_qty"],
+                    "billed_qty": row["billed_qty"],
+                    "ordered_net": row["ordered_net"],
+                    "billed_net": row["billed_net"],
+                    "reasons_en": english,
+                    "reasons_de": german,
+                }
+            )
+        return payload
+
+    @app.get("/api/report")
+    def report():
+        conn = connect(db)
+        try:
+            ap = conn.execute(
+                """
+                SELECT COUNT(*) AS documents,
+                       SUM(decision = 'INVESTIGATE') AS investigate,
+                       SUM(decision = 'APPROVE') AS approve,
+                       ROUND(SUM(gross_eur), 2) AS gross,
+                       SUM(gross_eur IS NULL) AS missing_gross
+                FROM ap_invoice_reviews
+                """
+            ).fetchone()
+            counts: dict[str, int] = {}
+            for row in conn.execute("SELECT issue_codes FROM ap_invoice_reviews"):
+                for code in (row["issue_codes"] or "").split(","):
+                    code = code.strip()
+                    if code:
+                        counts[code] = counts.get(code, 0) + 1
+            blocked = conn.execute(
+                """
+                SELECT ticket_id, first_name, order_name, blocked_po, supplier_name
+                FROM gold_customer_service
+                WHERE blocked_po IS NOT NULL
+                ORDER BY ticket_id
+                """
+            ).fetchall()
+            open_tickets = conn.execute("SELECT COUNT(*) FROM zendesk_tickets WHERE status = 'open'").fetchone()[0]
+        finally:
+            conn.close()
+        top = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:5]
+        issues = []
+        for code, count in top:
+            pair = ISSUE_TEXT.get(code)
+            issues.append(
+                {
+                    "code": code,
+                    "count": count,
+                    "text_en": pair[0] if pair else code,
+                    "text_de": pair[1] if pair else code,
+                }
+            )
+        return {
+            "sync": {
+                "shopify_orders": stats.shopify_orders,
+                "shopify_pages": stats.shopify_pages,
+                "zendesk_tickets": stats.zendesk_tickets,
+                "zendesk_pages": stats.zendesk_pages,
+                "klaviyo_events": stats.klaviyo_events,
+                "klaviyo_pages": stats.klaviyo_pages,
+                "anvyl_orders": stats.anvyl_orders,
+                "sage_bills": stats.sage_bills,
+                "ap_reviews": stats.ap_reviews,
+            },
+            "service": {
+                "open_tickets": open_tickets,
+                "grounded_passed": grounded.passed,
+                "grounded_total": grounded.total,
+                "cost_eur": grounded.cost_eur,
+                "blocked": [dict(row) for row in blocked],
+            },
+            "invoices": {
+                "documents": ap["documents"],
+                "investigate": ap["investigate"],
+                "approve": ap["approve"],
+                "gross": ap["gross"],
+                "missing_gross": ap["missing_gross"],
+                "issues": issues,
+            },
         }
 
     @app.get("/api/tickets")
