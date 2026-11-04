@@ -133,7 +133,7 @@
   }
   html[data-theme="dark"] .steps span { background: #f3f1ec; color: #141414; border-color: #f3f1ec; }
   .app[hidden], .invoice-frame[hidden], .sheet[hidden] { display: none !important; }
-  .invoice-frame { width: 100%; height: calc(100vh - 64px); border: 0; background: #f2f4f8; display: block; }
+  .invoice-frame { width: 100%; height: calc(100vh - 64px); border: 0; background: var(--bg); display: block; }
   .sheet { height: calc(100vh - 64px); overflow: auto; padding: 28px 40px 72px; }
   .sheet h1 { font-size: 28px; }
   .sheet .lead { margin: -8px 0 22px; color: var(--muted); max-width: 640px; }
@@ -248,6 +248,7 @@ const copy = {
   en: {
     product: "Agent",
     howto: "Choose a ticket on the left. The draft on the right is not sent.",
+    howtoInvoices: "Drop a supplier invoice on the left. Nothing here is paid.",
     tickets: "Tickets",
     invoices: "Invoices",
     service: "Service",
@@ -353,6 +354,7 @@ const copy = {
   de: {
     product: "Agent",
     howto: "Links ein Ticket wählen. Der Entwurf wird nicht gesendet.",
+    howtoInvoices: "Links eine Lieferantenrechnung ablegen. Hier wird nichts bezahlt.",
     tickets: "Tickets",
     invoices: "Rechnungen",
     service: "Service",
@@ -459,7 +461,7 @@ const copy = {
 
 let lang = localStorage.getItem("harbor-lang") || "en";
 let theme = localStorage.getItem("harbor-theme") || "light";
-let desk = "service";
+let desk = "tickets";
 let supplyRows = null;
 let reportData = null;
 let tickets = [];
@@ -479,7 +481,8 @@ function day(value) { return String(value || "").slice(0, 10); }
 function applyChrome() {
   document.documentElement.lang = lang === "de" ? "de" : "en";
   document.querySelector("#productLabel").textContent = t().product;
-  document.querySelector("#howto").textContent = t().howto;
+  document.querySelector("#howto").textContent = desk === "invoices" ? t().howtoInvoices : t().howto;
+  syncInvoice();
   document.querySelector("#desk-tickets").textContent = t().tickets;
   document.querySelector("#desk-invoices").textContent = t().invoices;
   const dark = theme === "dark";
@@ -748,6 +751,22 @@ function renderReport() {
     <p class="issue">${esc(t().duplicate)}</p>`;
 }
 
+function invoiceSrc() {
+  const query = new URLSearchParams({
+    host: "harbor",
+    theme: theme,
+    lang: lang === "de" ? "DE" : "EN"
+  });
+  return "/invoices/index.html?" + query.toString();
+}
+
+function syncInvoice() {
+  const frame = document.querySelector("#invoice-frame");
+  const win = frame && frame.contentWindow;
+  if (!win || typeof win.harborSync !== "function") return;
+  win.harborSync(lang === "de" ? "DE" : "EN", theme);
+}
+
 function setDesk(next) {
   desk = next;
   document.querySelector("#desk-tickets").setAttribute("aria-pressed", desk === "tickets" ? "true" : "false");
@@ -757,9 +776,10 @@ function setDesk(next) {
   const frame = document.querySelector("#invoice-frame");
   frame.hidden = desk !== "invoices";
   if (desk === "invoices" && frame.dataset.loaded !== "1") {
-    frame.src = "/invoices/index.html";
+    frame.src = invoiceSrc();
     frame.dataset.loaded = "1";
   }
+  applyChrome();
 }
 
 document.querySelector("#lang-en").addEventListener("click", () => setLang("en"));
@@ -771,6 +791,7 @@ document.querySelector("#theme").addEventListener("click", () => {
 });
 document.querySelector("#desk-tickets").addEventListener("click", () => setDesk("tickets"));
 document.querySelector("#desk-invoices").addEventListener("click", () => setDesk("invoices"));
+document.querySelector("#invoice-frame").addEventListener("load", syncInvoice);
 
 async function main() {
   applyChrome();
