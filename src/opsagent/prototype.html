@@ -149,6 +149,47 @@
   .section-head .kicker { margin: 0; }
   .jump { border: 1px solid var(--line); background: var(--white); padding: 6px 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
   .jump + .jump { margin-left: 8px; }
+  .sheet.workspace { padding: 0; }
+  .desk-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; padding: 22px 28px 0; }
+  .desk-top h1 { margin: 0; font-size: 28px; }
+  .desk-top .lead { margin: 6px 0 0; max-width: 520px; }
+  .filters { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
+  .filters button { flex: 1; border: 0; background: transparent; padding: 12px 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .filters button[aria-pressed="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--black); }
+  .board { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); min-height: calc(100vh - 64px); }
+  .board-list { background: var(--panel); border-right: 1px solid var(--line); }
+  .board-detail { padding: 32px 40px 64px; }
+  .board-detail h1 { margin-top: 6px; }
+  .supply-grid, .report-body { padding: 18px 28px 56px; }
+  .supply-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .compare { background: var(--white); border: 1px solid var(--line); padding: 18px; display: flex; flex-direction: column; gap: 12px; min-height: 100%; }
+  .compare header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; height: auto; padding: 0; border: 0; background: transparent; margin: 0; }
+  .sheet.workspace > .empty { padding: 28px; }
+  .compare h2 { margin: 0; font-size: 18px; letter-spacing: 0; text-transform: none; }
+  .bars { display: grid; gap: 8px; margin: 0; }
+  .bars div { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+  .bars i { display: block; height: 8px; background: var(--ink); }
+  .bars i.over { background: var(--hold); }
+  .bars b { color: var(--ink); font-size: 14px; }
+  .doors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .door { text-align: left; background: var(--white); border: 1px solid var(--line); padding: 18px; cursor: pointer; color: inherit; }
+  .door:hover { box-shadow: inset 3px 0 0 var(--black); }
+  .door b { display: block; font-size: 28px; letter-spacing: -0.03em; margin: 8px 0 4px; }
+  .door span { display: block; color: var(--muted); font-size: 13px; }
+  .sources { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .sources div { background: var(--white); border: 1px solid var(--line); padding: 12px; }
+  .sources b { display: block; font-size: 20px; }
+  .sources span, .rank { color: var(--muted); font-size: 13px; }
+  .ranks { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+  .ranks li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; align-items: center; }
+  .ranks i { display: block; height: 8px; background: var(--ink); margin-top: 6px; }
+  .first { display: block; width: 100%; text-align: left; background: var(--white); border: 1px solid var(--line); border-left: 3px solid var(--hold); padding: 16px 18px; cursor: pointer; color: inherit; margin-bottom: 14px; }
+  .first strong { display: block; font-size: 18px; margin: 4px 0; }
+  .first span { color: var(--muted); font-size: 14px; }
+  @media (max-width: 980px) {
+    .board, .supply-grid, .doors, .sources { grid-template-columns: 1fr; }
+    .board { min-height: 0; }
+  }
   .kicker { margin: 0 0 6px; letter-spacing: 0.12em; text-transform: uppercase; font-size: 11px; color: var(--muted); font-weight: 600; }
   h1 { margin: 0 0 18px; font-size: 32px; font-weight: 600; letter-spacing: -0.03em; }
   .card { background: var(--white); border: 1px solid var(--line); padding: 18px 20px; margin: 0 0 14px; }
@@ -272,6 +313,11 @@ const copy = {
     serviceTitle: "Customer service",
     serviceLead: "Every open customer, before anyone opens one ticket. A held row is waiting on a supplier bill. Fraud goes to a person. The draft is written on Tickets and is not sent.",
     serviceConnect: "Open a row to land on that ticket. The held purchase order is the same row on Supply.",
+    attention: "Look here",
+    allCustomers: "All",
+    askedFor: "They asked",
+    doThis: "Do this",
+    doFirst: "Do this first",
     reportConnect: "Open Service, Supply, or Invoices to do the work. This page only reads the result.",
     openTicket: "Open the ticket",
     openHere: "Open",
@@ -392,6 +438,11 @@ const copy = {
     serviceTitle: "Kundenservice",
     serviceLead: "Alle offenen Kunden, bevor jemand ein Ticket öffnet. Eine gehaltene Zeile wartet auf eine Lieferantenrechnung. Betrug übernimmt eine Person. Der Entwurf steht unter Tickets und wird nicht gesendet.",
     serviceConnect: "Eine Zeile öffnet genau dieses Ticket. Die gehaltene Bestellung ist dieselbe Zeile unter Lieferkette.",
+    attention: "Hier hinsehen",
+    allCustomers: "Alle",
+    askedFor: "Das Anliegen",
+    doThis: "Das tun",
+    doFirst: "Zuerst das",
     reportConnect: "Service, Lieferkette oder Rechnungen öffnen, um die Arbeit zu tun. Diese Seite liest nur das Ergebnis.",
     openTicket: "Ticket öffnen",
     openHere: "Öffnen",
@@ -498,6 +549,8 @@ let lang = localStorage.getItem("harbor-lang") || "en";
 let theme = localStorage.getItem("harbor-theme") || "light";
 let desk = "tickets";
 let serviceRows = null;
+let serviceFocus = null;
+let serviceFilter = "all";
 let supplyRows = null;
 let reportData = null;
 let tickets = [];
@@ -734,63 +787,106 @@ function qty(value) {
   return Number.isInteger(number) ? String(number) : String(number);
 }
 
+function hotRow(row) {
+  return Boolean(row.blocked_po) || row.intent === "fraud";
+}
+
 function renderService() {
   const page = document.querySelector("#desk-page");
+  page.classList.add("workspace");
   if (!serviceRows) {
     page.innerHTML = `<p class="empty">${esc(t().loading)}</p>`;
     return;
   }
-  const blocked = serviceRows.filter((row) => row.blocked_po).length;
-  const frauds = serviceRows.filter((row) => row.intent === "fraud").length;
-  const cards = serviceRows.map((row) => {
-    const intent = (t().intents && t().intents[row.intent]) || row.intent;
-    const held = Boolean(row.blocked_po);
-    const fraud = row.intent === "fraud";
-    const state = fraud ? t().fraudCount : held ? t().held : t().clear;
-    const detail = fraud
-      ? t().actions.do_not_pay_off_platform
-      : held
-        ? t().supplyHold(row.blocked_po, row.supplier_name)
-        : t().noSupply;
-    return `<article class="bill">
-      <header><h2>${esc(row.first_name)} · ${esc(row.order_name)}</h2><span class="status ${held || fraud ? "hold" : "ok"}">${esc(state)}</span></header>
-      <p class="issue">${esc(intent)} · ${esc(row.brand)} · ${esc(row.subject)}</p>
-      <p class="fact">${esc(detail)}</p>
-      <button type="button" class="jump" data-open="${esc(row.ticket_id)}">${esc(t().openTicket)}</button>
-    </article>`;
+  const shown = serviceRows.filter((row) => {
+    if (serviceFilter === "hot") return hotRow(row);
+    if (serviceFilter === "clear") return !hotRow(row);
+    return true;
+  });
+  if (!shown.some((row) => row.ticket_id === serviceFocus)) {
+    const firstHot = serviceRows.find(hotRow);
+    serviceFocus = (shown[0] || firstHot || serviceRows[0] || {}).ticket_id || null;
+  }
+  const selected = serviceRows.find((row) => row.ticket_id === serviceFocus) || shown[0];
+  const counts = {
+    all: serviceRows.length,
+    hot: serviceRows.filter(hotRow).length,
+    clear: serviceRows.filter((row) => !hotRow(row)).length
+  };
+  const filters = ["all", "hot", "clear"].map((name) => {
+    const label = name === "all" ? t().allCustomers : name === "hot" ? t().attention : t().clear;
+    return `<button type="button" data-filter="${name}" aria-pressed="${serviceFilter === name ? "true" : "false"}">${esc(label)} ${esc(counts[name])}</button>`;
   }).join("");
-  page.innerHTML = `<h1>${esc(t().serviceTitle)}</h1><p class="lead">${esc(t().serviceLead)}</p>
-    <div class="metric">
-      <div><b>${esc(serviceRows.length)}</b><span>${esc(t().openTickets)}</span></div>
-      <div><b>${esc(blocked)}</b><span>${esc(t().blockedCount)}</span></div>
-      <div><b>${esc(frauds)}</b><span>${esc(t().fraudCount)}</span></div>
+  const list = shown.map((row) => {
+    const intent = (t().intents && t().intents[row.intent]) || row.intent;
+    const state = row.intent === "fraud" ? t().intents.fraud : row.blocked_po ? t().held : t().clear;
+    return `<button type="button" class="ticket" data-pick="${esc(row.ticket_id)}" aria-pressed="${row.ticket_id === serviceFocus ? "true" : "false"}">
+      <span class="who"><span>${esc(row.first_name)}</span><span class="tag">${esc(state)}</span></span>
+      <span class="subject">${esc(row.order_name)} · ${esc(intent)}</span>
+    </button>`;
+  }).join("");
+  const intent = selected ? ((t().intents && t().intents[selected.intent]) || selected.intent) : "";
+  const detail = !selected ? "" : selected.intent === "fraud"
+    ? t().actions.do_not_pay_off_platform
+    : selected.blocked_po
+      ? t().supplyHold(selected.blocked_po, selected.supplier_name)
+      : t().noSupply;
+  const detailHtml = selected ? `
+    <p class="kicker">${esc(selected.brand)}</p>
+    <h1>${esc(selected.first_name)} · ${esc(selected.order_name)}</h1>
+    <div class="card">
+      <h2>${esc(t().askedFor)}</h2>
+      <p class="customer">${esc(intent)}. ${esc(selected.subject)}</p>
     </div>
-    <p class="issue">${esc(t().serviceConnect)}</p>
-    ${cards}`;
+    <div class="card">
+      <h2>${esc(t().doThis)}</h2>
+      <p class="customer">${esc(detail)}</p>
+    </div>
+    <button type="button" class="jump" data-open="${esc(selected.ticket_id)}">${esc(t().openTicket)}</button>
+    <p class="issue">${esc(t().person)}</p>` : `<p class="empty">${esc(t().loading)}</p>`;
+  page.innerHTML = `<div class="board">
+    <aside class="board-list">
+      <div class="filters">${filters}</div>
+      ${list || `<p class="empty" style="padding:18px">${esc(t().clear)}</p>`}
+    </aside>
+    <main class="board-detail">${detailHtml}</main>
+  </div>`;
 }
 
 function renderSupply() {
   const page = document.querySelector("#desk-page");
+  page.classList.add("workspace");
   if (!supplyRows) {
     page.innerHTML = `<p class="empty">${esc(t().loading)}</p>`;
     return;
   }
+  const holds = supplyRows.filter((row) => row.decision === "INVESTIGATE").length;
   const cards = supplyRows.map((row) => {
     const hold = row.decision === "INVESTIGATE";
-    const reasons = (lang === "de" ? row.reasons_de : row.reasons_en).map((line) => `<p class="fact">${esc(line)}</p>`).join("");
-    const people = (row.waiting || []).map((person) => `<button type="button" class="jump" data-open="${esc(person.ticket_id)}">${esc(t().customerWaiting)}: ${esc(person.first_name)} · ${esc(person.order_name)}</button>`).join("");
-    return `<article class="bill">
-      <header><h2>${esc(row.supplier)} · ${esc(row.po_number)}</h2><span class="status ${hold ? "hold" : "ok"}">${esc(hold ? t().hold : t().canPay)}</span></header>
-      <p class="issue">${esc(row.bill_id)} · ${esc(t().ordered)} ${esc(qty(row.ordered_qty))} · ${esc(t().billed)} ${esc(qty(row.billed_qty))} · EUR ${esc(money(row.ordered_net))} / ${esc(money(row.billed_net))}</p>
-      ${reasons || `<p class="fact">${esc(t().canPay)}. ${esc(t().noPay)}</p>`}
+    const ordered = Number(row.ordered_qty || 0);
+    const billed = Number(row.billed_qty || 0);
+    const scale = Math.max(ordered, billed, 1);
+    const reasons = (lang === "de" ? row.reasons_de : row.reasons_en);
+    const why = reasons.length ? reasons.map((line) => `<p class="fact">${esc(line)}</p>`).join("") : `<p class="fact">${esc(t().canPay)}. ${esc(t().noPay)}</p>`;
+    const people = (row.waiting || []).map((person) => `<button type="button" class="jump" data-open="${esc(person.ticket_id)}">${esc(person.first_name)} · ${esc(person.order_name)}</button>`).join("");
+    return `<article class="compare">
+      <header><h2>${esc(row.supplier)}</h2><span class="status ${hold ? "hold" : "ok"}">${esc(hold ? t().hold : t().canPay)}</span></header>
+      <p class="issue">${esc(row.po_number)} · ${esc(row.bill_id)}</p>
+      <div class="bars">
+        <div><span>${esc(t().ordered)}</span><i style="width:${Math.round(ordered / scale * 100)}%"></i><b>${esc(qty(ordered))}</b></div>
+        <div><span>${esc(t().billed)}</span><i class="${hold ? "over" : ""}" style="width:${Math.round(billed / scale * 100)}%"></i><b>${esc(qty(billed))}</b></div>
+      </div>
+      <p class="issue">EUR ${esc(money(row.ordered_net))} → ${esc(money(row.billed_net))}</p>
+      ${why}
       ${people}
     </article>`;
   }).join("");
-  page.innerHTML = `<h1>${esc(t().supplyTitle)}</h1><p class="lead">${esc(t().supplyLead)}</p><p class="issue">${esc(t().supplyConnect)}</p>${cards}`;
+  page.innerHTML = `<div class="desk-top"><div><h1>${esc(t().supplyTitle)}</h1><p class="lead">${esc(t().howtoSupply)}</p></div><p class="issue">${esc(holds)} ${esc(t().hold)}</p></div><div class="supply-grid">${cards}</div>`;
 }
 
 function renderReport() {
   const page = document.querySelector("#desk-page");
+  page.classList.add("workspace");
   if (!reportData) {
     page.innerHTML = `<p class="empty">${esc(t().loading)}</p>`;
     return;
@@ -800,42 +896,34 @@ function renderReport() {
   const invoices = reportData.invoices;
   const holds = supplyRows ? supplyRows.filter((row) => row.decision === "INVESTIGATE").length : 0;
   const pays = supplyRows ? supplyRows.filter((row) => row.decision !== "INVESTIGATE").length : 0;
-  const waiting = (service.blocked || []).map((row) => `<p class="issue">${esc(row.first_name)} · ${esc(row.order_name)} · ${esc(row.blocked_po)} · ${esc(row.supplier_name)}</p>`).join("");
-  const issues = (invoices.issues || []).map((item) => `<p class="issue">${esc(item.count)} · ${esc(lang === "de" ? item.text_de : item.text_en)}</p>`).join("");
-  page.innerHTML = `
-    <h1>${esc(t().reportTitle)}</h1>
-    <p class="lead">${esc(t().reportLead)}</p>
-    <p class="issue">${esc(t().reportConnect)}</p>
-    <h2 class="kicker">${esc(t().loaded)}</h2>
-    <div class="metric">
-      <div><b>${esc(sync.shopify_orders)}</b><span>Shopify · ${esc(sync.shopify_pages)} ${esc(t().pages)}</span></div>
-      <div><b>${esc(sync.zendesk_tickets)}</b><span>Zendesk · ${esc(sync.zendesk_pages)} ${esc(t().pages)}</span></div>
-      <div><b>${esc(sync.klaviyo_events)}</b><span>Klaviyo · ${esc(sync.klaviyo_pages)} ${esc(t().pages)}</span></div>
-      <div><b>${esc(sync.anvyl_orders)}</b><span>Anvyl · ${esc(sync.anvyl_pages)} ${esc(t().pages)}</span></div>
-      <div><b>${esc(sync.sage_bills)}</b><span>Sage · ${esc(sync.sage_pages)} ${esc(t().pages)}</span></div>
-      <div><b>${esc(sync.ap_reviews)}</b><span>${esc(t().documents)}</span></div>
-    </div>
-    <div class="section-head"><h2 class="kicker">${esc(t().serviceResult)}</h2><button type="button" class="jump" data-desk="service">${esc(t().openHere)}</button></div>
-    <div class="metric">
-      <div><b>${esc(service.open_tickets)}</b><span>${esc(t().openTickets)}</span></div>
-      <div><b>${esc(service.grounded_passed)}/${esc(service.grounded_total)}</b><span>${esc(t().draftsPassed)}</span></div>
-      <div><b>EUR ${esc(money(service.cost_eur))}</b><span>${esc(t().cost)}</span></div>
-    </div>
-    <p class="issue">${esc(t().waiting)}</p>
-    ${waiting}
-    <div class="section-head"><h2 class="kicker">${esc(t().supplyResult)}</h2><button type="button" class="jump" data-desk="supply">${esc(t().openHere)}</button></div>
-    <div class="metric">
-      <div><b>${esc(holds)}</b><span>${esc(t().holdCount)}</span></div>
-      <div><b>${esc(pays)}</b><span>${esc(t().payCount)}</span></div>
-    </div>
-    <div class="section-head"><h2 class="kicker">${esc(t().invoiceResult)}</h2><button type="button" class="jump" data-desk="invoices">${esc(t().openHere)}</button></div>
-    <div class="metric">
-      <div><b>${esc(invoices.documents)}</b><span>${esc(t().documents)}</span></div>
-      <div><b>${esc(invoices.investigate)}</b><span>${esc(t().holdCount)}</span></div>
-      <div><b>EUR ${esc(money(invoices.gross))}</b><span>${esc(t().gross)}</span></div>
-    </div>
-    ${issues}
-    <p class="issue">${esc(t().duplicate)}</p>`;
+  const first = (service.blocked || [])[0];
+  const banner = first ? `<button type="button" class="first" data-open="${esc(first.ticket_id)}">
+      <span class="kicker">${esc(t().doFirst)}</span>
+      <strong>${esc(first.first_name)} · ${esc(first.order_name)} · ${esc(first.blocked_po)}</strong>
+      <span>${esc(first.supplier_name)}. ${esc(t().waiting)}</span>
+    </button>` : "";
+  const top = Math.max(...(invoices.issues || []).map((item) => item.count), 1);
+  const ranks = (invoices.issues || []).map((item) => `<li><b>${esc(item.count)}</b><div><span class="rank">${esc(lang === "de" ? item.text_de : item.text_en)}</span><i style="width:${Math.round(item.count / top * 100)}%"></i></div></li>`).join("");
+  const source = (count, pages, name) => `<div><b>${esc(count)}</b><span>${esc(name)} · ${esc(pages)} ${esc(t().pages)}</span></div>`;
+  page.innerHTML = `<div class="desk-top"><div><h1>${esc(t().reportTitle)}</h1><p class="lead">${esc(t().howtoReport)}</p></div></div>
+    <div class="report-body">
+      ${banner}
+      <div class="doors">
+        <button type="button" class="door" data-desk="service"><span class="kicker">${esc(t().serviceResult)}</span><b>${esc(service.open_tickets)}</b><span>${esc(service.grounded_passed)}/${esc(service.grounded_total)} ${esc(t().draftsPassed)} · EUR ${esc(money(service.cost_eur))}</span></button>
+        <button type="button" class="door" data-desk="supply"><span class="kicker">${esc(t().supplyResult)}</span><b>${esc(holds)}</b><span>${esc(t().holdCount)} · ${esc(pays)} ${esc(t().payCount)}</span></button>
+        <button type="button" class="door" data-desk="invoices"><span class="kicker">${esc(t().invoiceResult)}</span><b>${esc(invoices.documents)}</b><span>${esc(invoices.investigate)} ${esc(t().holdCount)} · EUR ${esc(money(invoices.gross))}</span></button>
+      </div>
+      <div class="sources">
+        ${source(sync.shopify_orders, sync.shopify_pages, "Shopify")}
+        ${source(sync.zendesk_tickets, sync.zendesk_pages, "Zendesk")}
+        ${source(sync.klaviyo_events, sync.klaviyo_pages, "Klaviyo")}
+        ${source(sync.anvyl_orders, sync.anvyl_pages, "Anvyl")}
+        ${source(sync.sage_bills, sync.sage_pages, "Sage")}
+        <div><b>${esc(sync.ap_reviews)}</b><span>${esc(t().documents)}</span></div>
+      </div>
+      <ol class="ranks">${ranks}</ol>
+      <p class="issue">${esc(t().duplicate)}</p>
+    </div>`;
 }
 
 function invoiceSrc() {
@@ -913,9 +1001,17 @@ document.querySelector("#desk-supply").addEventListener("click", () => setDesk("
 document.querySelector("#desk-invoices").addEventListener("click", () => setDesk("invoices"));
 document.querySelector("#desk-report").addEventListener("click", () => setDesk("report"));
 document.querySelector("#desk-page").addEventListener("click", (event) => {
+  const filter = event.target.closest("[data-filter]");
+  const pick = event.target.closest("[data-pick]");
   const open = event.target.closest("[data-open]");
   const go = event.target.closest("[data-desk]");
-  if (open) {
+  if (filter) {
+    serviceFilter = filter.dataset.filter;
+    renderService();
+  } else if (pick) {
+    serviceFocus = Number(pick.dataset.pick);
+    renderService();
+  } else if (open) {
     const id = Number(open.dataset.open);
     setDesk("tickets");
     openTicket(id);
