@@ -7,12 +7,13 @@ from pathlib import Path
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 from opsagent.agent.classify import classify
 from opsagent.agent.copilot import review_ticket
 from opsagent.eval.run import evaluate
 from opsagent.mockapi.app import create_app
-from opsagent.paths import VAR_DIR
+from opsagent.paths import PROJECT_ROOT, VAR_DIR
 from opsagent.settings import Settings, load_settings
 from opsagent.sync_asgi import SyncASGITransport
 from opsagent.warehouse.load import sync
@@ -51,6 +52,10 @@ def create_prototype(settings: Settings | None = None) -> FastAPI:
     db, stats = _prepare(settings)
     grounded = evaluate(db, settings, "grounded")
     app = FastAPI(title="Commerce ops agent")
+
+    invoice_ui = PROJECT_ROOT / "invoice_ui"
+    if invoice_ui.is_dir():
+        app.mount("/invoices", StaticFiles(directory=invoice_ui, html=True), name="invoices")
 
     @app.get("/health")
     def health():

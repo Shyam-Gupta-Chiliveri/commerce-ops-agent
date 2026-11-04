@@ -128,11 +128,13 @@
   .steps { display: flex; gap: 22px; list-style: none; margin: 0 0 26px; padding: 0; }
   .steps li { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
   .steps span {
-    width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line);
-    display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--ink);     background: var(--white);
+    width: 20px; height: 20px; border-radius: 50%; border: 1px solid #141414;
+    display: grid; place-items: center; font-size: 11px; font-weight: 600; color: #ffffff; background: #141414;
   }
+  html[data-theme="dark"] .steps span { background: #f3f1ec; color: #141414; border-color: #f3f1ec; }
+  .app[hidden], .invoice-frame[hidden], .sheet[hidden] { display: none !important; }
+  .invoice-frame { width: 100%; height: calc(100vh - 64px); border: 0; background: #f2f4f8; display: block; }
   .sheet { height: calc(100vh - 64px); overflow: auto; padding: 28px 40px 72px; }
-  .sheet[hidden] { display: none; }
   .sheet h1 { font-size: 28px; }
   .sheet .lead { margin: -8px 0 22px; color: var(--muted); max-width: 640px; }
   .bill { background: var(--white); border: 1px solid var(--line); padding: 16px 18px; margin: 0 0 12px; max-width: 760px; }
@@ -171,11 +173,12 @@
   .proof li:last-child::before { display: none; }
   .proof .n {
     width: 28px; height: 28px; border-radius: 50%;
-    background: var(--black); color: white;
+    background: #141414; color: #ffffff;
     display: grid; place-items: center;
-    font-size: 12px; font-weight: 600;
+    font-size: 13px; font-weight: 600; line-height: 1;
     position: relative; z-index: 1;
   }
+  html[data-theme="dark"] .proof .n { background: #f3f1ec; color: #141414; }
   .step-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
   .step-title { margin: 2px 0 0; font-weight: 600; font-size: 15px; }
   .sys { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
@@ -210,9 +213,8 @@
     <span class="product" id="productLabel">Agent</span>
   </div>
   <nav class="desk" id="desk" aria-label="Work">
-    <button type="button" id="desk-service" aria-pressed="true">Service</button>
-    <button type="button" id="desk-supply" aria-pressed="false">Supply</button>
-    <button type="button" id="desk-report" aria-pressed="false">Report</button>
+    <button type="button" id="desk-tickets" aria-pressed="true">Tickets</button>
+    <button type="button" id="desk-invoices" aria-pressed="false">Invoices</button>
   </nav>
   <p class="howto" id="howto"></p>
   <div class="tools">
@@ -239,12 +241,15 @@
     <ol class="proof" id="sources"></ol>
   </aside>
 </div>
+<iframe class="invoice-frame" id="invoice-frame" hidden title="Invoice review"></iframe>
 <main class="sheet" id="desk-page" hidden></main>
 <script>
 const copy = {
   en: {
     product: "Agent",
     howto: "Choose a ticket on the left. The draft on the right is not sent.",
+    tickets: "Tickets",
+    invoices: "Invoices",
     service: "Service",
     supply: "Supply",
     report: "Report",
@@ -348,6 +353,8 @@ const copy = {
   de: {
     product: "Agent",
     howto: "Links ein Ticket wählen. Der Entwurf wird nicht gesendet.",
+    tickets: "Tickets",
+    invoices: "Rechnungen",
     service: "Service",
     supply: "Lieferkette",
     report: "Bericht",
@@ -473,9 +480,8 @@ function applyChrome() {
   document.documentElement.lang = lang === "de" ? "de" : "en";
   document.querySelector("#productLabel").textContent = t().product;
   document.querySelector("#howto").textContent = t().howto;
-  document.querySelector("#desk-service").textContent = t().service;
-  document.querySelector("#desk-supply").textContent = t().supply;
-  document.querySelector("#desk-report").textContent = t().report;
+  document.querySelector("#desk-tickets").textContent = t().tickets;
+  document.querySelector("#desk-invoices").textContent = t().invoices;
   const dark = theme === "dark";
   document.documentElement.dataset.theme = theme;
   document.querySelector("#theme").setAttribute("aria-pressed", dark ? "true" : "false");
@@ -665,8 +671,6 @@ function setLang(next) {
   applyChrome();
   renderList();
   if (current) renderWork(current);
-  if (desk === "supply") renderSupply();
-  if (desk === "report") renderReport();
 }
 
 function money(value) {
@@ -744,22 +748,17 @@ function renderReport() {
     <p class="issue">${esc(t().duplicate)}</p>`;
 }
 
-async function setDesk(next) {
+function setDesk(next) {
   desk = next;
-  for (const name of ["service", "supply", "report"]) {
-    document.querySelector("#desk-" + name).setAttribute("aria-pressed", desk === name ? "true" : "false");
-  }
-  document.querySelector("#app").hidden = desk !== "service";
-  const page = document.querySelector("#desk-page");
-  page.hidden = desk === "service";
-  if (desk === "supply") {
-    if (!supplyRows) supplyRows = await (await fetch("/api/supply")).json();
-    renderSupply();
-  }
-  if (desk === "report") {
-    if (!supplyRows) supplyRows = await (await fetch("/api/supply")).json();
-    if (!reportData) reportData = await (await fetch("/api/report")).json();
-    renderReport();
+  document.querySelector("#desk-tickets").setAttribute("aria-pressed", desk === "tickets" ? "true" : "false");
+  document.querySelector("#desk-invoices").setAttribute("aria-pressed", desk === "invoices" ? "true" : "false");
+  document.querySelector("#app").hidden = desk !== "tickets";
+  document.querySelector("#desk-page").hidden = true;
+  const frame = document.querySelector("#invoice-frame");
+  frame.hidden = desk !== "invoices";
+  if (desk === "invoices" && frame.dataset.loaded !== "1") {
+    frame.src = "/invoices/index.html";
+    frame.dataset.loaded = "1";
   }
 }
 
@@ -769,12 +768,9 @@ document.querySelector("#theme").addEventListener("click", () => {
   theme = theme === "dark" ? "light" : "dark";
   localStorage.setItem("harbor-theme", theme);
   applyChrome();
-  if (desk === "supply") renderSupply();
-  if (desk === "report") renderReport();
 });
-document.querySelector("#desk-service").addEventListener("click", () => setDesk("service"));
-document.querySelector("#desk-supply").addEventListener("click", () => setDesk("supply"));
-document.querySelector("#desk-report").addEventListener("click", () => setDesk("report"));
+document.querySelector("#desk-tickets").addEventListener("click", () => setDesk("tickets"));
+document.querySelector("#desk-invoices").addEventListener("click", () => setDesk("invoices"));
 
 async function main() {
   applyChrome();
