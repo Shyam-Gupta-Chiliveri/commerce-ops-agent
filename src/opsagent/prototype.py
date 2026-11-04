@@ -103,6 +103,21 @@ def create_prototype(settings: Settings | None = None) -> FastAPI:
                 ORDER BY CASE WHEN br.decision = 'INVESTIGATE' THEN 0 ELSE 1 END, br.bill_id
                 """
             ).fetchall()
+            waiting: dict[str, list[dict[str, object]]] = {}
+            for person in conn.execute(
+                """
+                SELECT DISTINCT ticket_id, first_name, order_name, blocked_po
+                FROM gold_customer_service
+                WHERE blocked_po IS NOT NULL
+                """
+            ):
+                waiting.setdefault(person["blocked_po"], []).append(
+                    {
+                        "ticket_id": person["ticket_id"],
+                        "first_name": person["first_name"],
+                        "order_name": person["order_name"],
+                    }
+                )
         finally:
             conn.close()
         payload = []
@@ -121,6 +136,44 @@ def create_prototype(settings: Settings | None = None) -> FastAPI:
                     "billed_net": row["billed_net"],
                     "reasons_en": english,
                     "reasons_de": german,
+                    "waiting": waiting.get(row["po_number"], []),
+                }
+            )
+        return payload
+
+    @app.get("/api/service")
+    def service_queue():
+        conn = connect(db)
+        try:
+            rows = conn.execute(
+                """
+                SELECT t.ticket_id, t.first_name, t.subject, t.description, t.brand, t.order_name,
+                       o.financial_status, o.fulfillment_status,
+                       MAX(b.order_number) AS blocked_po,
+                       MAX(b.supplier_name) AS supplier_name
+                FROM zendesk_tickets t
+                LEFT JOIN shopify_orders o ON o.order_name = t.order_name
+                LEFT JOIN shopify_line_items li ON li.order_id = o.order_id
+                LEFT JOIN gold_supply_block b ON b.sku = li.sku
+                GROUP BY t.ticket_id
+                ORDER BY t.ticket_id
+                """
+            ).fetchall()
+        finally:
+            conn.close()
+        payload = []
+        for row in rows:
+            intent, _size = classify(f"{row['subject']}\n{row['description']}")
+            payload.append(
+                {
+                    "ticket_id": row["ticket_id"],
+                    "first_name": row["first_name"],
+                    "subject": row["subject"],
+                    "brand": row["brand"],
+                    "order_name": row["order_name"],
+                    "intent": intent,
+                    "blocked_po": row["blocked_po"],
+                    "supplier_name": row["supplier_name"],
                 }
             )
         return payload
@@ -177,7 +230,9 @@ def create_prototype(settings: Settings | None = None) -> FastAPI:
                 "klaviyo_events": stats.klaviyo_events,
                 "klaviyo_pages": stats.klaviyo_pages,
                 "anvyl_orders": stats.anvyl_orders,
+                "anvyl_pages": stats.anvyl_pages,
                 "sage_bills": stats.sage_bills,
+                "sage_pages": stats.sage_pages,
                 "ap_reviews": stats.ap_reviews,
             },
             "service": {
