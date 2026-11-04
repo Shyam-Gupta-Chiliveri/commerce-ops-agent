@@ -176,12 +176,16 @@
   .door:hover { box-shadow: inset 3px 0 0 var(--black); }
   .door b { display: block; font-size: 28px; letter-spacing: -0.03em; margin: 8px 0 4px; }
   .door span { display: block; color: var(--muted); font-size: 13px; }
-  .sources { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .meaning { color: var(--ink); font-weight: 600; font-size: 15px; }
+  .sources { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
   .sources div { background: var(--white); border: 1px solid var(--line); padding: 12px; }
   .sources b { display: block; font-size: 20px; }
-  .sources span, .rank { color: var(--muted); font-size: 13px; }
-  .ranks { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
-  .ranks li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; align-items: center; }
+  .sources span, .rank { display: block; color: var(--muted); font-size: 13px; }
+  .sources .meaning, .door .meaning { color: var(--ink); }
+  .report-body .kicker { margin-top: 22px; }
+  .ranks { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
+  .ranks li { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 10px; align-items: start; }
+  .ranks b { display: block; font-size: 18px; line-height: 1; }
   .ranks i { display: block; height: 8px; background: var(--ink); margin-top: 6px; }
   .first { display: block; width: 100%; text-align: left; background: var(--white); border: 1px solid var(--line); border-left: 3px solid var(--hold); padding: 16px 18px; cursor: pointer; color: inherit; margin-bottom: 14px; }
   .first strong { display: block; font-size: 18px; margin: 4px 0; }
@@ -299,7 +303,7 @@ const copy = {
     howtoInvoices: "Drop a supplier invoice on the left. Nothing here is paid.",
     howtoService: "Every open customer. Open a row to read the draft.",
     howtoSupply: "Hold means do not pay, and do not promise a date.",
-    howtoReport: "Service, supply, and invoices, on one page.",
+    howtoReport: "Each number is a count. The words under it say what was counted.",
     tickets: "Tickets",
     invoices: "Invoices",
     service: "Service",
@@ -340,7 +344,24 @@ const copy = {
     cost: "Model cost",
     holdCount: "Bills to hold",
     payCount: "Bills a person can pay",
+    otherCanPay: "other bills a person can pay",
     documents: "Invoices",
+    meanCustomers: "open customer tickets",
+    oneHold: "supplier bill not to pay",
+    manyHold: "supplier bills not to pay",
+    meanDocs: "supplier documents read",
+    draftsChecked: "drafts checked. Nothing was sent.",
+    ofWord: "of",
+    readIn: "Read in",
+    shopOrders: "orders from the shop",
+    helpTickets: "customer tickets",
+    mailEvents: "marketing emails",
+    purchaseOrders: "purchase orders",
+    accountsBills: "bills in the accounts",
+    invoiceFiles: "invoice files already checked",
+    foundTitle: "What those invoice files showed",
+    invoiceUnit: "invoices",
+    onHoldDocs: "are on hold. Nothing was paid. Gross",
     gross: "Gross on file",
     waiting: "A customer is waiting because a supplier bill is on hold.",
     duplicate: "A duplicate invoice is still in the gross until a person removes it.",
@@ -424,7 +445,7 @@ const copy = {
     howtoInvoices: "Links eine Lieferantenrechnung ablegen. Hier wird nichts bezahlt.",
     howtoService: "Alle offenen Kunden. Eine Zeile öffnet den Entwurf.",
     howtoSupply: "Gehalten heißt: nicht zahlen und kein Datum versprechen.",
-    howtoReport: "Service, Lieferkette und Rechnungen auf einer Seite.",
+    howtoReport: "Jede Zahl ist eine Anzahl. Darunter steht, was gezählt wurde.",
     tickets: "Tickets",
     invoices: "Rechnungen",
     service: "Service",
@@ -465,7 +486,24 @@ const copy = {
     cost: "Modellkosten",
     holdCount: "Rechnungen halten",
     payCount: "Eine Person kann zahlen",
+    otherCanPay: "weitere Rechnungen kann eine Person zahlen",
     documents: "Rechnungen",
+    meanCustomers: "offene Kundentickets",
+    oneHold: "Lieferantenrechnung nicht zahlen",
+    manyHold: "Lieferantenrechnungen nicht zahlen",
+    meanDocs: "gelesene Lieferantendokumente",
+    draftsChecked: "Entwürfe geprüft. Nichts wurde gesendet.",
+    ofWord: "von",
+    readIn: "Gelesen auf",
+    shopOrders: "Bestellungen aus dem Shop",
+    helpTickets: "Kundentickets",
+    mailEvents: "Marketing-E-Mails",
+    purchaseOrders: "Bestellungen beim Lieferanten",
+    accountsBills: "Rechnungen in der Buchhaltung",
+    invoiceFiles: "bereits geprüfte Rechnungsdateien",
+    foundTitle: "Was diese Rechnungsdateien gezeigt haben",
+    invoiceUnit: "Rechnungen",
+    onHoldDocs: "sind gehalten. Nichts wurde gezahlt. Brutto",
     gross: "Brutto in den Belegen",
     waiting: "Eine Kundin wartet, weil eine Lieferantenrechnung gehalten ist.",
     duplicate: "Eine doppelte Rechnung bleibt in der Summe, bis eine Person sie entfernt.",
@@ -903,24 +941,26 @@ function renderReport() {
       <span>${esc(first.supplier_name)}. ${esc(t().waiting)}</span>
     </button>` : "";
   const top = Math.max(...(invoices.issues || []).map((item) => item.count), 1);
-  const ranks = (invoices.issues || []).map((item) => `<li><b>${esc(item.count)}</b><div><span class="rank">${esc(lang === "de" ? item.text_de : item.text_en)}</span><i style="width:${Math.round(item.count / top * 100)}%"></i></div></li>`).join("");
-  const source = (count, pages, name) => `<div><b>${esc(count)}</b><span>${esc(name)} · ${esc(pages)} ${esc(t().pages)}</span></div>`;
+  const ranks = (invoices.issues || []).map((item) => `<li><div><b>${esc(item.count)}</b><span>${esc(t().invoiceUnit)}</span></div><div><span class="rank">${esc(lang === "de" ? item.text_de : item.text_en)}</span><i style="width:${Math.round(item.count / top * 100)}%"></i></div></li>`).join("");
+  const source = (count, pages, system, what) => `<div><b>${esc(count)}</b><span class="meaning">${esc(what)}</span><span>${esc(system)} · ${esc(t().readIn)} ${esc(pages)} ${esc(t().pages)}</span></div>`;
   page.innerHTML = `<div class="desk-top"><div><h1>${esc(t().reportTitle)}</h1><p class="lead">${esc(t().howtoReport)}</p></div></div>
     <div class="report-body">
       ${banner}
       <div class="doors">
-        <button type="button" class="door" data-desk="service"><span class="kicker">${esc(t().serviceResult)}</span><b>${esc(service.open_tickets)}</b><span>${esc(service.grounded_passed)}/${esc(service.grounded_total)} ${esc(t().draftsPassed)} · EUR ${esc(money(service.cost_eur))}</span></button>
-        <button type="button" class="door" data-desk="supply"><span class="kicker">${esc(t().supplyResult)}</span><b>${esc(holds)}</b><span>${esc(t().holdCount)} · ${esc(pays)} ${esc(t().payCount)}</span></button>
-        <button type="button" class="door" data-desk="invoices"><span class="kicker">${esc(t().invoiceResult)}</span><b>${esc(invoices.documents)}</b><span>${esc(invoices.investigate)} ${esc(t().holdCount)} · EUR ${esc(money(invoices.gross))}</span></button>
+        <button type="button" class="door" data-desk="service"><span class="kicker">${esc(t().serviceResult)}</span><b>${esc(service.open_tickets)}</b><span class="meaning">${esc(t().meanCustomers)}</span><span>${esc(service.grounded_passed)} ${esc(t().ofWord)} ${esc(service.grounded_total)} ${esc(t().draftsChecked)} EUR ${esc(money(service.cost_eur))}.</span></button>
+        <button type="button" class="door" data-desk="supply"><span class="kicker">${esc(t().supplyResult)}</span><b>${esc(holds)}</b><span class="meaning">${esc(holds === 1 ? t().oneHold : t().manyHold)}</span><span>${esc(pays)} ${esc(t().otherCanPay)}.</span></button>
+        <button type="button" class="door" data-desk="invoices"><span class="kicker">${esc(t().invoiceResult)}</span><b>${esc(invoices.documents)}</b><span class="meaning">${esc(t().meanDocs)}</span><span>${esc(invoices.investigate)} ${esc(t().onHoldDocs)} EUR ${esc(money(invoices.gross))}.</span></button>
       </div>
+      <h2 class="kicker">${esc(t().loaded)}</h2>
       <div class="sources">
-        ${source(sync.shopify_orders, sync.shopify_pages, "Shopify")}
-        ${source(sync.zendesk_tickets, sync.zendesk_pages, "Zendesk")}
-        ${source(sync.klaviyo_events, sync.klaviyo_pages, "Klaviyo")}
-        ${source(sync.anvyl_orders, sync.anvyl_pages, "Anvyl")}
-        ${source(sync.sage_bills, sync.sage_pages, "Sage")}
-        <div><b>${esc(sync.ap_reviews)}</b><span>${esc(t().documents)}</span></div>
+        ${source(sync.shopify_orders, sync.shopify_pages, "Shopify", t().shopOrders)}
+        ${source(sync.zendesk_tickets, sync.zendesk_pages, "Zendesk", t().helpTickets)}
+        ${source(sync.klaviyo_events, sync.klaviyo_pages, "Klaviyo", t().mailEvents)}
+        ${source(sync.anvyl_orders, sync.anvyl_pages, "Anvyl", t().purchaseOrders)}
+        ${source(sync.sage_bills, sync.sage_pages, "Sage", t().accountsBills)}
+        <div><b>${esc(sync.ap_reviews)}</b><span class="meaning">${esc(t().invoiceFiles)}</span></div>
       </div>
+      <h2 class="kicker">${esc(t().foundTitle)}</h2>
       <ol class="ranks">${ranks}</ol>
       <p class="issue">${esc(t().duplicate)}</p>
     </div>`;
