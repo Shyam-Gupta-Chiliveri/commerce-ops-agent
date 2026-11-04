@@ -1,0 +1,17 @@
+file;decision;priority;vendor;invoice_number;date;po;gross_eur;issues;summary
+b01_etikett_soehne_re-4471.pdf;INVESTIGATE;HIGH;Etikett & Söhne GmbH;RE-4471;2026-05-18;QB-10387;3843.70;ITEMS_NOT_ORDERED,OVER_PO_VALUE,IBAN_SHARED;Do not pay: Bank account shared with other vendors (+2 more)
+b02_glashuette_weiden_re-2026-559.pdf;INVESTIGATE;NORMAL;Glashütte Weiden GmbH;RE-2026-559;2026-05-22;QB-10391;25235.62;ITEMS_NOT_ORDERED,OVER_PO_VALUE;"Clarify before paying: Items not on the order; Net exceeds order value"
+b03_sued_zucker_re-8841.pdf;INVESTIGATE;HIGH;Süddeutsche Zucker-Handels GmbH;RE-8841;2026-06-24;QB-10412;8958.02;MATH_ERROR,PO_NO_VALUE,IBAN_SHARED;"Do not pay: Arithmetic error; Bank account shared with other vendors (+1 more)"
+b04_kraeuterhof_allgaeu_re-2026-0331.pdf;INVESTIGATE;HIGH;Kräuterhof Allgäu eG;RE-2026-0331;2026-06-11;;4591.23;VAT_ERROR,NO_PO,IBAN_SHARED;"Do not pay: VAT miscalculated; Bank account shared with other vendors (+1 more)"
+b05_brenner_logistik_re-fr-11029.pdf;INVESTIGATE;HIGH;Brenner Logistik GmbH;FR-11029;2026-06-28;;1773.10;NO_PO,IBAN_INVALID;Do not pay: IBAN is not a valid account (+1 more)
+b06_kolb_re-2026-0447.pdf;INVESTIGATE;HIGH;Maschinenservice Kolb;RE-2026-0447;2026-06-15;QB-10402;2992.85;ITEMS_NOT_ORDERED,OVER_PO_VALUE,IBAN_SHARED,HAS_DUPLICATE;Do not pay: Bank account shared with other vendors (+3 more)
+b07_kronkorken_mueller_re-5567.pdf;INVESTIGATE;HIGH;Kronkorken Müller KG;RE-5567;2026-06-19;QB-10405;5414.50;QTY_OVER,OVER_PO_VALUE,IBAN_SHARED;Do not pay: Bank account shared with other vendors (+2 more)
+b08_getraenke_ostbayern_re-2026-771.jpg;INVESTIGATE;HIGH;Getränkefachgroßhandel Ostbayern;RE-2026-771;2026-06-21;;1278.06;NO_PO,IBAN_SHARED;Do not pay: Bank account shared with other vendors (+1 more)
+b09_federkiel_design_re-2026-14.pdf;INVESTIGATE;HIGH;Federkiel Design Studio · Lena Vogt;2026-14;2026-06-05;;3284.40;MISSING_FIELDS,NO_PO,IBAN_SHARED;Do not pay: Bank account shared with other vendors (+2 more)
+b10_kolb_re-2026-0489.pdf;INVESTIGATE;HIGH;Maschinenservice Kolb;RE-2026-0489;2026-06-27;QB-10402;2992.85;ITEMS_NOT_ORDERED,OVER_PO_VALUE,IBAN_SHARED,DUPLICATE;"Do not pay: Bank account shared with other vendors; Duplicate invoice (+2 more)"
+b11_hopfen_etikett_re-3390.pdf;INVESTIGATE;HIGH;Hopfen & Etikett Druck GmbH;RE-3390;2026-06-23;;;MISSING_FIELDS,NO_PO,IBAN_SHARED;Do not pay: Bank account shared with other vendors (+2 more)
+b12_kartonagen_beck_ls-2210.pdf;INVESTIGATE;HIGH;Kartonagen Beck GmbH;LS-2210;2026-06-20;QB-10398;;NOT_AN_INVOICE,ITEMS_NOT_ORDERED;Do not pay: Delivery note, not an invoice (+1 more)
+b13_nordic_caps_inv-2026-338.pdf;INVESTIGATE;NORMAL;Nordic Bottle Caps ApS;INV-2026-338;2026-06-17;;1875.00;NO_PO;Clarify before paying: No purchase order
+b14_fruchtkontor_bodensee_re-2026-902.pdf;INVESTIGATE;HIGH;Fruchtkontor Bodensee GmbH;RE-2026-902;2026-06-26;QB-10416;10817.70;ITEMS_NOT_ORDERED,OVER_PO_VALUE,IBAN_SHARED;Do not pay: Bank account shared with other vendors (+2 more)
+b15_tankreinigung_sued_an-2026-118.pdf;INVESTIGATE;HIGH;Tankreinigung Süddeutschland GmbH;AN-2026-118;2026-06-30;QB-10421;4760.00;NOT_AN_INVOICE,ITEMS_NOT_ORDERED,OVER_PO_VALUE,IBAN_SHARED;"Do not pay: Quote, not an invoice; Bank account shared with other vendors (+2 more)"
+b16_brauereibedarf_hartmann_re-7712.pdf;INVESTIGATE;HIGH;Brauereibedarf Hartmann GmbH;RE-7712;2026-06-13;;2655.37;NO_PO,IBAN_SHARED;Do not pay: Bank account shared with other vendors (+1 more)

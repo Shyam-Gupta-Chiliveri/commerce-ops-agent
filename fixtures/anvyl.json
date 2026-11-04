@@ -1,0 +1,61 @@
+{
+  "purchase_orders": [
+    {
+      "id": "po_2207",
+      "order_number": "PO-2207",
+      "name": "Move Leggings black replenishment",
+      "status": "confirmed",
+      "ships_on": "2026-10-22",
+      "supplier": {"id": 501, "name": "Rhein Textil GmbH"},
+      "order_items": [
+        {
+          "part_id": 90001,
+          "sku": "HM-LEG-M-BLK",
+          "name": "Move Leggings M / Black",
+          "quantity": 400,
+          "quantity_received": 0,
+          "unit_of_measure": "units",
+          "unit_price_micros": 12000000
+        }
+      ]
+    },
+    {
+      "id": "po_2210",
+      "order_number": "PO-2210",
+      "name": "Basics socks 39",
+      "status": "received",
+      "ships_on": "2026-09-01",
+      "supplier": {"id": 502, "name": "Elbe Knit GmbH"},
+      "order_items": [
+        {
+          "part_id": 90011,
+          "sku": "HB-SOCK-39",
+          "name": "Basics Socken 39",
+          "quantity": 1000,
+          "quantity_received": 1000,
+          "unit_of_measure": "units",
+          "unit_price_micros": 2500000
+        }
+      ]
+    },
+    {
+      "id": "po_2219",
+      "order_number": "PO-2219",
+      "name": "Cycle brief M",
+      "status": "received",
+      "ships_on": "2026-09-15",
+      "supplier": {"id": 503, "name": "Neckar Mills GmbH"},
+      "order_items": [
+        {
+          "part_id": 90031,
+          "sku": "HC-BRIEF-M",
+          "name": "Cycle Periodenunterwäsche M",
+          "quantity": 500,
+          "quantity_received": 500,
+          "unit_of_measure": "units",
+          "unit_price_micros": 9000000
+        }
+      ]
+    }
+  ]
+}

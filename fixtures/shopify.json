@@ -1,0 +1,223 @@
+{
+  "orders": [
+    {
+      "id": 5001048,
+      "name": "#1048",
+      "email": "lena.hoffmann@example.com",
+      "created_at": "2026-10-20T09:12:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": null,
+      "currency": "EUR",
+      "total_price": "79.00",
+      "tags": "brand:Harbor Move",
+      "customer": {"first_name": "Lena", "last_name": "Hoffmann"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-24"}],
+      "fulfillments": [],
+      "line_items": [
+        {
+          "id": 9001,
+          "sku": "HM-LEG-M-BLK",
+          "title": "Move Leggings",
+          "variant_title": "M / Black",
+          "quantity": 1,
+          "price": "79.00"
+        }
+      ]
+    },
+    {
+      "id": 5001033,
+      "name": "#1033",
+      "email": "mara.klein@example.com",
+      "created_at": "2026-10-22T14:02:00+01:00",
+      "financial_status": "refunded",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "24.90",
+      "tags": "brand:Harbor Basics",
+      "customer": {"first_name": "Mara", "last_name": "Klein"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-24"}],
+      "fulfillments": [
+        {
+          "id": 7001,
+          "status": "success",
+          "created_at": "2026-10-23T10:00:00+01:00",
+          "tracking_number": null
+        }
+      ],
+      "line_items": [
+        {
+          "id": 9002,
+          "sku": "HB-SOCK-39",
+          "title": "Basics Socken",
+          "variant_title": "39",
+          "quantity": 1,
+          "price": "24.90"
+        }
+      ]
+    },
+    {
+      "id": 5001052,
+      "name": "#1052",
+      "email": "jonas.weber@example.com",
+      "created_at": "2026-10-16T11:20:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "18.00",
+      "tags": "brand:Harbor Basics",
+      "customer": {"first_name": "Jonas", "last_name": "Weber"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-18"}],
+      "fulfillments": [
+        {
+          "id": 7002,
+          "status": "success",
+          "created_at": "2026-10-18T09:00:00+01:00",
+          "tracking_number": "00340434161000000018"
+        }
+      ],
+      "line_items": [
+        {
+          "id": 9003,
+          "sku": "HB-SOCK-39",
+          "title": "Basics Socken",
+          "variant_title": "39",
+          "quantity": 1,
+          "price": "18.00"
+        }
+      ]
+    },
+    {
+      "id": 5001019,
+      "name": "#1019",
+      "email": "aylin.demir@example.com",
+      "created_at": "2026-10-12T11:04:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "64.00",
+      "tags": "brand:Harbor Move",
+      "customer": {"first_name": "Aylin", "last_name": "Demir"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-14"}],
+      "fulfillments": [
+        {
+          "id": 7003,
+          "status": "success",
+          "created_at": "2026-10-13T16:00:00+01:00",
+          "tracking_number": "00340434161000000019"
+        }
+      ],
+      "line_items": [
+        {
+          "id": 9004,
+          "sku": "HM-TOP-S-NAV",
+          "title": "Move Top",
+          "variant_title": "S / Navy",
+          "quantity": 1,
+          "price": "64.00"
+        }
+      ]
+    },
+    {
+      "id": 5001060,
+      "name": "#1060",
+      "email": "sofia.berger@example.com",
+      "created_at": "2026-10-19T08:40:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "32.00",
+      "tags": "brand:Harbor Cycle",
+      "customer": {"first_name": "Sofia", "last_name": "Berger"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-21"}],
+      "fulfillments": [
+        {
+          "id": 7004,
+          "status": "success",
+          "created_at": "2026-10-21T12:00:00+01:00",
+          "tracking_number": "00340434161000000060"
+        }
+      ],
+      "line_items": [
+        {
+          "id": 9005,
+          "sku": "HC-BRIEF-M",
+          "title": "Cycle Periodenunterwäsche",
+          "variant_title": "M",
+          "quantity": 1,
+          "price": "32.00"
+        }
+      ]
+    },
+    {
+      "id": 5001077,
+      "name": "#1077",
+      "email": "tim.oswald@example.com",
+      "created_at": "2026-10-11T17:18:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "22.00",
+      "tags": "brand:Harbor Basics",
+      "customer": {"first_name": "Tim", "last_name": "Oswald"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-13"}],
+      "fulfillments": [
+        {
+          "id": 7005,
+          "status": "success",
+          "created_at": "2026-10-13T09:30:00+01:00",
+          "tracking_number": "00340434161000000077"
+        }
+      ],
+      "line_items": [
+        {
+          "id": 9006,
+          "sku": "HB-BOXER-L",
+          "title": "Basics Boxershorts",
+          "variant_title": "L",
+          "quantity": 1,
+          "price": "22.00"
+        }
+      ]
+    }
+  ],
+  "transactions": {
+    "5001019": [
+      {
+        "id": 81019,
+        "kind": "sale",
+        "status": "success",
+        "amount": "64.00",
+        "gateway": "shopify_payments",
+        "created_at": "2026-10-12T11:04:00+01:00"
+      }
+    ],
+    "5001033": [
+      {
+        "id": 81033,
+        "kind": "sale",
+        "status": "success",
+        "amount": "24.90",
+        "gateway": "shopify_payments",
+        "created_at": "2026-10-22T14:02:00+01:00"
+      },
+      {
+        "id": 81034,
+        "kind": "refund",
+        "status": "success",
+        "amount": "24.90",
+        "gateway": "shopify_payments",
+        "created_at": "2026-10-30T09:15:00+01:00"
+      }
+    ]
+  },
+  "variants": [
+    {"sku": "HM-LEG-M-BLK", "product_id": "move-leggings", "option": "M / Black", "title": "Move Leggings", "inventory_item_id": 70001, "available": 0},
+    {"sku": "HM-LEG-S-BLK", "product_id": "move-leggings", "option": "S / Black", "title": "Move Leggings", "inventory_item_id": 70002, "available": 4},
+    {"sku": "HM-LEG-L-BLK", "product_id": "move-leggings", "option": "L / Black", "title": "Move Leggings", "inventory_item_id": 70003, "available": 2},
+    {"sku": "HB-SOCK-39", "product_id": "basics-sock", "option": "39", "title": "Basics Socken", "inventory_item_id": 70011, "available": 20},
+    {"sku": "HB-SOCK-43", "product_id": "basics-sock", "option": "43", "title": "Basics Socken", "inventory_item_id": 70012, "available": 15},
+    {"sku": "HM-TOP-S-NAV", "product_id": "move-top", "option": "S / Navy", "title": "Move Top", "inventory_item_id": 70021, "available": 6},
+    {"sku": "HC-BRIEF-M", "product_id": "cycle-brief", "option": "M", "title": "Cycle Periodenunterwäsche", "inventory_item_id": 70031, "available": 8},
+    {"sku": "HB-BOXER-L", "product_id": "basics-boxer", "option": "L", "title": "Basics Boxershorts", "inventory_item_id": 70041, "available": 11}
+  ]
+}

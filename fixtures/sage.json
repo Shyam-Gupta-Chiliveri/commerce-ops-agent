@@ -1,0 +1,61 @@
+{
+  "purchase_invoices": [
+    {
+      "id": "BILL-2207",
+      "displayed_as": "BILL-2207",
+      "date": "2026-10-26",
+      "reference": "RE-7781",
+      "vendor_reference": "PO-2207",
+      "contact": {"id": "c501", "displayed_as": "Rhein Textil GmbH"},
+      "status": {"id": "UNPAID", "displayed_as": "Unpaid"},
+      "total_amount": "6854.40",
+      "invoice_lines": [
+        {
+          "sku": "HM-LEG-M-BLK",
+          "description": "Move Leggings M / Black",
+          "quantity": 480,
+          "unit_price": "12.00",
+          "net_amount": "5760.00"
+        }
+      ]
+    },
+    {
+      "id": "BILL-2210",
+      "displayed_as": "BILL-2210",
+      "date": "2026-09-04",
+      "reference": "RE-4410",
+      "vendor_reference": "PO-2210",
+      "contact": {"id": "c502", "displayed_as": "Elbe Knit GmbH"},
+      "status": {"id": "PAID", "displayed_as": "Paid"},
+      "total_amount": "2975.00",
+      "invoice_lines": [
+        {
+          "sku": "HB-SOCK-39",
+          "description": "Basics Socken 39",
+          "quantity": 1000,
+          "unit_price": "2.50",
+          "net_amount": "2500.00"
+        }
+      ]
+    },
+    {
+      "id": "BILL-2219",
+      "displayed_as": "BILL-2219",
+      "date": "2026-09-18",
+      "reference": "RE-4419",
+      "vendor_reference": "PO-2219",
+      "contact": {"id": "c503", "displayed_as": "Neckar Mills GmbH"},
+      "status": {"id": "PAID", "displayed_as": "Paid"},
+      "total_amount": "5355.00",
+      "invoice_lines": [
+        {
+          "sku": "HC-BRIEF-M",
+          "description": "Cycle Periodenunterwäsche M",
+          "quantity": 500,
+          "unit_price": "9.00",
+          "net_amount": "4500.00"
+        }
+      ]
+    }
+  ]
+}

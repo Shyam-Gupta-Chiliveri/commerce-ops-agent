@@ -1,0 +1,8 @@
+services:
+  web:
+    build: .
+    image: commerce-ops-agent:latest
+    container_name: commerce-ops-agent
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8092:80"

@@ -1,0 +1,146 @@
+{
+  "users": [
+    {"id": 88021, "name": "Lena Hoffmann", "email": "lena.hoffmann@example.com", "locale": "de"},
+    {"id": 88022, "name": "Mara Klein", "email": "mara.klein@example.com", "locale": "de"},
+    {"id": 88023, "name": "Jonas Weber", "email": "jonas.weber@example.com", "locale": "de"},
+    {"id": 88024, "name": "Aylin Demir", "email": "aylin.demir@example.com", "locale": "de"},
+    {"id": 88025, "name": "Sofia Berger", "email": "sofia.berger@example.com", "locale": "de"},
+    {"id": 88026, "name": "Tim Oswald", "email": "tim.oswald@example.com", "locale": "de"}
+  ],
+  "tickets": [
+    {
+      "id": 44021,
+      "subject": "Bestellung #1048 immer noch nicht da",
+      "status": "open",
+      "created_at": "2026-11-03T18:04:00+01:00",
+      "requester_id": 88021,
+      "tags": ["brand:harbor-move"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Move"},
+        {"id": 1002, "value": "#1048"}
+      ],
+      "description": "Hallo, meine Leggings aus Bestellung #1048 sind immer noch nicht da. Das Rennen ist am Sonntag, ich brauche sie vorher."
+    },
+    {
+      "id": 44022,
+      "subject": "Geld zurück für Bestellung #1033",
+      "status": "open",
+      "created_at": "2026-11-02T09:40:00+01:00",
+      "requester_id": 88022,
+      "tags": ["brand:harbor-basics"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Basics"},
+        {"id": 1002, "value": "#1033"}
+      ],
+      "description": "Bitte erstatte mir Bestellung #1033 noch einmal. Das Geld ist nicht auf meinem Konto."
+    },
+    {
+      "id": 44023,
+      "subject": "Größe tauschen bei Bestellung #1052",
+      "status": "open",
+      "created_at": "2026-11-01T15:12:00+01:00",
+      "requester_id": 88023,
+      "tags": ["brand:harbor-basics"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Basics"},
+        {"id": 1002, "value": "#1052"}
+      ],
+      "description": "Die Socken aus Bestellung #1052 sind zu klein. Ich brauche Größe 43."
+    },
+    {
+      "id": 44024,
+      "subject": "Zweimal abgebucht, Bestellung #1019",
+      "status": "open",
+      "created_at": "2026-11-03T11:05:00+01:00",
+      "requester_id": 88024,
+      "tags": ["brand:harbor-move"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Move"},
+        {"id": 1002, "value": "#1019"}
+      ],
+      "description": "Ihr habt mich zweimal abgebucht für Bestellung #1019. Bitte prüft das."
+    },
+    {
+      "id": 44025,
+      "subject": "Cycle Unterwäsche hat ausgelaufen, #1060",
+      "status": "open",
+      "created_at": "2026-11-02T19:22:00+01:00",
+      "requester_id": 88025,
+      "tags": ["brand:harbor-cycle"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Cycle"},
+        {"id": 1002, "value": "#1060"}
+      ],
+      "description": "Die Unterwäsche aus Bestellung #1060 hat ausgelaufen. Das darf nicht passieren."
+    },
+    {
+      "id": 44026,
+      "subject": "Keine Mails mehr, Bestellung #1077 war in Ordnung",
+      "status": "open",
+      "created_at": "2026-11-03T08:16:00+01:00",
+      "requester_id": 88026,
+      "tags": ["brand:harbor-basics"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Basics"},
+        {"id": 1002, "value": "#1077"}
+      ],
+      "description": "Bitte keine Mails mehr. Der Newsletter soll weg. Bestellung #1077 selbst war in Ordnung."
+    }
+  ],
+  "comments": {
+    "44021": [
+      {
+        "id": 1,
+        "author_id": 88021,
+        "public": true,
+        "created_at": "2026-11-03T18:04:00+01:00",
+        "body": "Hallo, meine Leggings aus Bestellung #1048 sind immer noch nicht da. Das Rennen ist am Sonntag, ich brauche sie vorher."
+      }
+    ],
+    "44022": [
+      {
+        "id": 2,
+        "author_id": 88022,
+        "public": true,
+        "created_at": "2026-11-02T09:40:00+01:00",
+        "body": "Bitte erstatte mir Bestellung #1033 noch einmal. Das Geld ist nicht auf meinem Konto."
+      }
+    ],
+    "44023": [
+      {
+        "id": 3,
+        "author_id": 88023,
+        "public": true,
+        "created_at": "2026-11-01T15:12:00+01:00",
+        "body": "Die Socken aus Bestellung #1052 sind zu klein. Ich brauche Größe 43."
+      }
+    ],
+    "44024": [
+      {
+        "id": 4,
+        "author_id": 88024,
+        "public": true,
+        "created_at": "2026-11-03T11:05:00+01:00",
+        "body": "Ihr habt mich zweimal abgebucht für Bestellung #1019. Bitte prüft das."
+      }
+    ],
+    "44025": [
+      {
+        "id": 5,
+        "author_id": 88025,
+        "public": true,
+        "created_at": "2026-11-02T19:22:00+01:00",
+        "body": "Die Unterwäsche aus Bestellung #1060 hat ausgelaufen. Das darf nicht passieren."
+      }
+    ],
+    "44026": [
+      {
+        "id": 6,
+        "author_id": 88026,
+        "public": true,
+        "created_at": "2026-11-03T08:16:00+01:00",
+        "body": "Bitte keine Mails mehr. Der Newsletter soll weg. Bestellung #1077 selbst war in Ordnung."
+      }
+    ]
+  }
+}

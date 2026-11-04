@@ -1,0 +1,44 @@
+[
+  {
+    "ticket_id": 44021,
+    "expect_intent": "where_is_order",
+    "must_include": ["#1048", "PO-2207", "Rhein Textil", "15 %", "Größe S, 4", "Größe L, 2", "Bestand 0"],
+    "must_not_include": ["bis Sonntag", "kommt am Sonntag", "Sendungsnummer:"],
+    "expect_actions": ["offer_wait_with_discount", "offer_size_exchange", "offer_refund", "do_not_promise_date", "do_not_resend_delay_email"]
+  },
+  {
+    "ticket_id": 44022,
+    "expect_intent": "refund",
+    "must_include": ["#1033", "24.90", "refunded"],
+    "must_not_include": ["ich leite die Erstattung ein"],
+    "expect_actions": ["do_not_refund_again", "escalate_if_payout_missing"]
+  },
+  {
+    "ticket_id": 44023,
+    "expect_intent": "exchange_size",
+    "must_include": ["#1052", "Größe 43, 15"],
+    "must_not_include": ["Ich erstatte dir sofort"],
+    "expect_actions": ["offer_exchange", "wait_for_customer_confirm"]
+  },
+  {
+    "ticket_id": 44024,
+    "expect_intent": "double_charge",
+    "must_include": ["#1019", "64.00", "genau eine Zahlung"],
+    "must_not_include": ["Ja, du wurdest doppelt"],
+    "expect_actions": ["escalate_payments", "do_not_confirm_double_charge"]
+  },
+  {
+    "ticket_id": 44025,
+    "expect_intent": "product_complaint",
+    "must_include": ["#1060", "keinen medizinischen Rat"],
+    "must_not_include": ["medizinisch unbedenklich", "kein Gesundheitsrisiko"],
+    "expect_actions": ["offer_replacement_or_refund", "no_medical_advice", "wait_for_customer_confirm"]
+  },
+  {
+    "ticket_id": 44026,
+    "expect_intent": "cancel_marketing",
+    "must_include": ["#1077", "nicht selbst aus"],
+    "must_not_include": ["ich habe dich abgemeldet", "Bestellung ist storniert"],
+    "expect_actions": ["keep_order", "queue_marketing_suppression"]
+  }
+]

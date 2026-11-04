@@ -1,0 +1,126 @@
+{
+  "profiles": [
+    {"type": "profile", "id": "prof_lena", "attributes": {"email": "lena.hoffmann@example.com"}},
+    {"type": "profile", "id": "prof_mara", "attributes": {"email": "mara.klein@example.com"}},
+    {"type": "profile", "id": "prof_jonas", "attributes": {"email": "jonas.weber@example.com"}},
+    {"type": "profile", "id": "prof_aylin", "attributes": {"email": "aylin.demir@example.com"}},
+    {"type": "profile", "id": "prof_sofia", "attributes": {"email": "sofia.berger@example.com"}},
+    {"type": "profile", "id": "prof_tim", "attributes": {"email": "tim.oswald@example.com"}}
+  ],
+  "metrics": [
+    {"type": "metric", "id": "met_placed", "attributes": {"name": "Placed Order"}},
+    {"type": "metric", "id": "met_fulfilled", "attributes": {"name": "Fulfilled Order"}},
+    {"type": "metric", "id": "met_email", "attributes": {"name": "Received Email"}},
+    {"type": "metric", "id": "met_refunded", "attributes": {"name": "Refunded Order"}}
+  ],
+  "events": [
+    {
+      "type": "event",
+      "id": "evt_lena_placed",
+      "attributes": {
+        "datetime": "2026-10-20T08:12:00+00:00",
+        "event_properties": {"Campaign Name": "", "Subject": "", "Order": "#1048"}
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_placed"}},
+        "profile": {"data": {"type": "profile", "id": "prof_lena"}}
+      }
+    },
+    {
+      "type": "event",
+      "id": "evt_lena_delay",
+      "attributes": {
+        "datetime": "2026-10-28T07:00:00+00:00",
+        "event_properties": {
+          "Campaign Name": "Shipping delay",
+          "Subject": "Deine Bestellung #1048 verzögert sich",
+          "Order": "#1048"
+        }
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_email"}},
+        "profile": {"data": {"type": "profile", "id": "prof_lena"}}
+      }
+    },
+    {
+      "type": "event",
+      "id": "evt_mara_refunded",
+      "attributes": {
+        "datetime": "2026-10-30T08:15:00+00:00",
+        "event_properties": {"Campaign Name": "", "Subject": "", "Order": "#1033"}
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_refunded"}},
+        "profile": {"data": {"type": "profile", "id": "prof_mara"}}
+      }
+    },
+    {
+      "type": "event",
+      "id": "evt_mara_email",
+      "attributes": {
+        "datetime": "2026-10-30T08:16:00+00:00",
+        "event_properties": {
+          "Campaign Name": "Refund confirmation",
+          "Subject": "Erstattung zu Bestellung #1033",
+          "Order": "#1033"
+        }
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_email"}},
+        "profile": {"data": {"type": "profile", "id": "prof_mara"}}
+      }
+    },
+    {
+      "type": "event",
+      "id": "evt_jonas_fulfilled",
+      "attributes": {
+        "datetime": "2026-10-18T07:00:00+00:00",
+        "event_properties": {"Campaign Name": "", "Subject": "", "Order": "#1052"}
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_fulfilled"}},
+        "profile": {"data": {"type": "profile", "id": "prof_jonas"}}
+      }
+    },
+    {
+      "type": "event",
+      "id": "evt_aylin_placed",
+      "attributes": {
+        "datetime": "2026-10-12T09:04:00+00:00",
+        "event_properties": {"Campaign Name": "", "Subject": "", "Order": "#1019"}
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_placed"}},
+        "profile": {"data": {"type": "profile", "id": "prof_aylin"}}
+      }
+    },
+    {
+      "type": "event",
+      "id": "evt_sofia_fulfilled",
+      "attributes": {
+        "datetime": "2026-10-21T10:00:00+00:00",
+        "event_properties": {"Campaign Name": "", "Subject": "", "Order": "#1060"}
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_fulfilled"}},
+        "profile": {"data": {"type": "profile", "id": "prof_sofia"}}
+      }
+    },
+    {
+      "type": "event",
+      "id": "evt_tim_winback",
+      "attributes": {
+        "datetime": "2026-11-01T08:00:00+00:00",
+        "event_properties": {
+          "Campaign Name": "Winback",
+          "Subject": "Wir vermissen dich",
+          "Order": ""
+        }
+      },
+      "relationships": {
+        "metric": {"data": {"type": "metric", "id": "met_email"}},
+        "profile": {"data": {"type": "profile", "id": "prof_tim"}}
+      }
+    }
+  ]
+}
