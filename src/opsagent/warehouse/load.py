@@ -89,6 +89,29 @@ def sync(
     )
 
 
+def account_counts(http: httpx.Client, settings: Settings, live_http: httpx.Client | None = None) -> dict[str, int]:
+    """Count records on each connected account. The example inbox is loaded separately."""
+    from opsagent.settings import klaviyo_base, sage_base, shopify_base, zendesk_base
+
+    shopify, zendesk, klaviyo, _anvyl, sage = build_clients(http, settings, live_http)
+    found: dict[str, int] = {}
+
+    def count(name: str, base: str, call) -> None:
+        if not base.startswith("https://"):
+            return
+        try:
+            rows, _pages = call()
+        except httpx.HTTPError:
+            return
+        found[name] = len(rows)
+
+    count("shopify_orders", shopify_base(settings), shopify.list_orders)
+    count("zendesk_tickets", zendesk_base(settings), zendesk.list_tickets)
+    count("klaviyo_events", klaviyo_base(settings), klaviyo.list_events)
+    count("sage_bills", sage_base(settings), sage.list_purchase_invoices)
+    return found
+
+
 def _live_or_empty(call):
     """A 403 from a live account leaves that list empty so the other sources still load."""
     try:

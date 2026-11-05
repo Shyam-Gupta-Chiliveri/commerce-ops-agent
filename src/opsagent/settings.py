@@ -86,7 +86,26 @@ def sage_base(settings: Settings) -> str:
     return "https://api.accounting.sage.com"
 
 
-def origins(settings: Settings) -> dict[str, object]:
+_ACCOUNT_WORDS = {
+    "shopify": ("Shopify", "shopify_orders", ("order", "orders"), ("Bestellung", "Bestellungen")),
+    "zendesk": ("Zendesk", "zendesk_tickets", ("ticket", "tickets"), ("Ticket", "Tickets")),
+    "klaviyo": ("Klaviyo", "klaviyo_events", ("event", "events"), ("Ereignis", "Ereignisse")),
+    "sage": ("Sage", "sage_bills", ("bill", "bills"), ("Rechnung", "Rechnungen")),
+}
+
+
+def _account_piece(name: str, host: str, accounts: dict[str, int] | None, lang: str) -> str:
+    label, key, english, german = _ACCOUNT_WORDS[name]
+    count = None if accounts is None else accounts.get(key)
+    if count is None:
+        return f"{label} {host} stays connected" if lang == "en" else f"{label} {host} bleibt verbunden"
+    word = (english if lang == "en" else german)[0 if count == 1 else 1]
+    if lang == "en":
+        return f"{label} {host} stays connected, {count} {word} in the account"
+    return f"{label} {host} bleibt verbunden, {count} {word} im Konto"
+
+
+def origins(settings: Settings, accounts: dict[str, int] | None = None) -> dict[str, object]:
     hosts = {
         "shopify": shopify_base(settings),
         "zendesk": zendesk_base(settings),
@@ -94,15 +113,18 @@ def origins(settings: Settings) -> dict[str, object]:
         "anvyl": "http://mock",
         "sage": sage_base(settings),
     }
-    live = [f"{name} {hosts[name]}" for name in hosts if str(hosts[name]).startswith("https://")]
+    live = [name for name in ("shopify", "zendesk", "klaviyo", "sage") if str(hosts[name]).startswith("https://")]
     if not live:
         text_en = "These counts were read from the local sample, not from a signed-in account."
         text_de = "Diese Zahlen stammen aus der lokalen Beispielkopie, nicht aus einem angemeldeten Konto."
     else:
-        detail = ", ".join(live)
-        text_en = f"Live pull from {detail}. Every other source is still the local sample."
-        text_de = f"Live-Abruf von {detail}. Jede andere Quelle ist noch die lokale Beispielkopie."
-    return {"hosts": hosts, "en": text_en, "de": text_de}
+        pieces_en = ". ".join(_account_piece(name, str(hosts[name]), accounts, "en") for name in live)
+        pieces_de = ". ".join(_account_piece(name, str(hosts[name]), accounts, "de") for name in live)
+        sage_en = "" if "sage" in live else " Sage stays on the example bills."
+        sage_de = "" if "sage" in live else " Sage bleibt bei den Beispielrechnungen."
+        text_en = f"The inbox keeps the examples. {pieces_en}.{sage_en}"
+        text_de = f"Der Posteingang behält die Beispiele. {pieces_de}.{sage_de}"
+    return {"hosts": hosts, "en": text_en, "de": text_de, "accounts": accounts or {}}
 
 
 def load_settings() -> Settings:

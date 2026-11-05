@@ -76,7 +76,12 @@
     height: calc(100vh - 64px);
     min-width: 0;
   }
-  #inbox { width: 300px; flex: 0 0 auto; }
+  #inbox { width: 300px; flex: 0 0 auto; display: flex; flex-direction: column; }
+  #list { flex: 1 1 auto; min-height: 0; overflow: auto; }
+  .connected {
+    flex: 0 0 auto; margin: 0; padding: 12px 14px 16px;
+    border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.45;
+  }
   .work { flex: 1 1 auto; min-width: 280px; }
   #rail { width: 400px; flex: 0 0 auto; }
   aside, .work, .rail { min-height: 0; overflow: auto; }
@@ -281,6 +286,7 @@
   <aside id="inbox">
     <p class="pane-label" id="inboxLabel">Inbox</p>
     <div id="list"></div>
+    <p class="connected" id="connected" hidden></p>
   </aside>
   <div class="split" id="split-inbox" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Resize inbox"></div>
   <main class="work" id="work">
@@ -592,6 +598,7 @@ let serviceFilter = "all";
 let supplyRows = null;
 let reportData = null;
 let tickets = [];
+let connection = null;
 let current = null;
 
 const list = document.querySelector("#list");
@@ -634,6 +641,15 @@ function applyChrome() {
   document.querySelector("#lang-en").setAttribute("aria-pressed", lang === "en" ? "true" : "false");
   document.querySelector("#lang-de").setAttribute("aria-pressed", lang === "de" ? "true" : "false");
   document.querySelector("#lang").setAttribute("aria-label", lang === "de" ? "Sprache" : "Language");
+  showConnection();
+}
+
+function showConnection() {
+  const node = document.querySelector("#connected");
+  const text = connection ? (lang === "de" ? connection.de : connection.en) : "";
+  const sample = !text || text.includes("local sample") || text.includes("Beispielkopie");
+  node.hidden = sample;
+  node.textContent = sample ? "" : text;
 }
 
 function step(number, title, system, status, statusClass, facts) {
@@ -952,7 +968,6 @@ function renderReport() {
         <button type="button" class="door" data-desk="invoices"><span class="kicker">${esc(t().invoiceResult)}</span><b>${esc(invoices.documents)}</b><span class="meaning">${esc(t().meanDocs)}</span><span>${esc(invoices.investigate)} ${esc(t().onHoldDocs)} EUR ${esc(money(invoices.gross))}.</span></button>
       </div>
       <h2 class="kicker">${esc(t().loaded)}</h2>
-      <p class="issue">${esc(lang === "de" ? (reportData.origin || {}).de : (reportData.origin || {}).en)}</p>
       <div class="sources">
         ${source(sync.shopify_orders, sync.shopify_pages, "Shopify", t().shopOrders)}
         ${source(sync.zendesk_tickets, sync.zendesk_pages, "Zendesk", t().helpTickets)}
@@ -961,6 +976,7 @@ function renderReport() {
         ${source(sync.sage_bills, sync.sage_pages, "Sage", t().accountsBills)}
         <div><b>${esc(sync.ap_reviews)}</b><span class="meaning">${esc(t().invoiceFiles)}</span></div>
       </div>
+      <p class="issue">${esc(lang === "de" ? (reportData.origin || {}).de : (reportData.origin || {}).en)}</p>
       <h2 class="kicker">${esc(t().foundTitle)}</h2>
       <ol class="ranks">${ranks}</ol>
       <p class="issue">${esc(t().duplicate)}</p>
@@ -1065,8 +1081,13 @@ document.querySelector("#invoice-frame").addEventListener("load", syncInvoice);
 async function main() {
   applyChrome();
   document.querySelector("#loading").textContent = t().loading;
-  const rows = await (await fetch("/api/tickets")).json();
+  const [rows, summary] = await Promise.all([
+    fetch("/api/tickets").then((response) => response.json()),
+    fetch("/api/summary").then((response) => response.json())
+  ]);
   tickets = rows;
+  connection = summary.connection || null;
+  showConnection();
   renderList();
   await openTicket(44021);
 }
