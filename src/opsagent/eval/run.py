@@ -32,7 +32,11 @@ def evaluate(db_path: Path, settings: Settings, drafter: str) -> EvalReport:
     latency = 0.0
     cost = 0.0
     for case in cases:
-        result = review_ticket(db_path, case["ticket_id"], settings, drafter=drafter)
+        try:
+            result = review_ticket(db_path, case["ticket_id"], settings, drafter=drafter)
+        except KeyError:
+            failures.append(f"{case['ticket_id']} missing")
+            continue
         latency += result.latency_ms
         cost += result.cost_eur
         case_ok = True
