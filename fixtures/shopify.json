@@ -209,6 +209,101 @@
           "price": "24.90"
         }
       ]
+    },
+    {
+      "id": 5001101,
+      "name": "#1101",
+      "email": "meera.shah@example.com",
+      "created_at": "2026-10-25T08:10:00+01:00",
+      "financial_status": "refunded",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "18.40",
+      "tags": "brand:Harbor Markt",
+      "customer": {"first_name": "Meera", "last_name": "Shah"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-26"}],
+      "fulfillments": [
+        {"id": 7101, "status": "success", "created_at": "2026-10-26T07:30:00+01:00", "tracking_number": "00340434161000001101"}
+      ],
+      "line_items": [
+        {"id": 9101, "sku": "MKT-RICE-5", "title": "Basmati Reis 5 kg", "variant_title": "5 kg", "quantity": 1, "price": "18.40"}
+      ]
+    },
+    {
+      "id": 5001102,
+      "name": "#1102",
+      "email": "lukas.berger@example.com",
+      "created_at": "2026-10-18T13:00:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "89.00",
+      "tags": "brand:Harbor Sport",
+      "customer": {"first_name": "Lukas", "last_name": "Berger"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-20"}],
+      "fulfillments": [
+        {"id": 7102, "status": "success", "created_at": "2026-10-20T09:00:00+01:00", "tracking_number": "00340434161000001102"}
+      ],
+      "line_items": [
+        {"id": 9102, "sku": "SPT-SHOE-42", "title": "Sport Laufschuh", "variant_title": "42", "quantity": 1, "price": "89.00"}
+      ]
+    },
+    {
+      "id": 5001103,
+      "name": "#1103",
+      "email": "ananya.iyer@example.com",
+      "created_at": "2026-10-21T10:15:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "249.00",
+      "tags": "brand:Harbor Home",
+      "customer": {"first_name": "Ananya", "last_name": "Iyer"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-28"}],
+      "fulfillments": [
+        {"id": 7103, "status": "success", "created_at": "2026-10-28T11:00:00+01:00", "tracking_number": "00340434161000001103"}
+      ],
+      "line_items": [
+        {"id": 9103, "sku": "HOME-CHAIR-OAK", "title": "Home Bürostuhl", "variant_title": "Eiche", "quantity": 1, "price": "249.00"}
+      ]
+    },
+    {
+      "id": 5001104,
+      "name": "#1104",
+      "email": "henrik.paul@example.com",
+      "created_at": "2026-10-27T18:40:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "86.20",
+      "tags": "brand:Harbor Hyper",
+      "customer": {"first_name": "Henrik", "last_name": "Paul"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-28"}],
+      "fulfillments": [
+        {"id": 7104, "status": "success", "created_at": "2026-10-28T16:00:00+01:00", "tracking_number": "00340434161000001104"}
+      ],
+      "line_items": [
+        {"id": 9104, "sku": "HYP-BASKET-W", "title": "Hyper Wochenkorb", "variant_title": "Standard", "quantity": 1, "price": "86.20"}
+      ]
+    },
+    {
+      "id": 5001105,
+      "name": "#1105",
+      "email": "sara.lind@example.com",
+      "created_at": "2026-10-15T09:05:00+01:00",
+      "financial_status": "paid",
+      "fulfillment_status": "fulfilled",
+      "currency": "EUR",
+      "total_price": "45.00",
+      "tags": "brand:Harbor Sport",
+      "customer": {"first_name": "Sara", "last_name": "Lind"},
+      "note_attributes": [{"name": "promised_ship_date", "value": "2026-10-17"}],
+      "fulfillments": [
+        {"id": 7105, "status": "success", "created_at": "2026-10-17T10:20:00+01:00", "tracking_number": "00340434161000001105"}
+      ],
+      "line_items": [
+        {"id": 9105, "sku": "SPT-TEE-M", "title": "Sport Laufshirt", "variant_title": "M", "quantity": 1, "price": "45.00"}
+      ]
     }
   ],
   "transactions": {
@@ -239,6 +334,13 @@
         "gateway": "shopify_payments",
         "created_at": "2026-10-30T09:15:00+01:00"
       }
+    ],
+    "5001101": [
+      {"id": 81101, "kind": "sale", "status": "success", "amount": "18.40", "gateway": "shopify_payments", "created_at": "2026-10-25T08:10:00+01:00"},
+      {"id": 81102, "kind": "refund", "status": "success", "amount": "18.40", "gateway": "shopify_payments", "created_at": "2026-11-01T09:00:00+01:00"}
+    ],
+    "5001104": [
+      {"id": 81104, "kind": "sale", "status": "success", "amount": "86.20", "gateway": "shopify_payments", "created_at": "2026-10-27T18:40:00+01:00"}
     ]
   },
   "variants": [
@@ -249,6 +351,12 @@
     {"sku": "HB-SOCK-43", "product_id": "basics-sock", "option": "43", "title": "Basics Socken", "inventory_item_id": 70012, "available": 15},
     {"sku": "HM-TOP-S-NAV", "product_id": "move-top", "option": "S / Navy", "title": "Move Top", "inventory_item_id": 70021, "available": 6},
     {"sku": "HC-BRIEF-M", "product_id": "cycle-brief", "option": "M", "title": "Cycle Periodenunterwäsche", "inventory_item_id": 70031, "available": 8},
-    {"sku": "HB-BOXER-L", "product_id": "basics-boxer", "option": "L", "title": "Basics Boxershorts", "inventory_item_id": 70041, "available": 11}
+    {"sku": "HB-BOXER-L", "product_id": "basics-boxer", "option": "L", "title": "Basics Boxershorts", "inventory_item_id": 70041, "available": 11},
+    {"sku": "MKT-RICE-5", "product_id": "markt-rice", "option": "5 kg", "title": "Basmati Reis 5 kg", "inventory_item_id": 70101, "available": 40},
+    {"sku": "SPT-SHOE-42", "product_id": "sport-shoe", "option": "42", "title": "Sport Laufschuh", "inventory_item_id": 70111, "available": 6},
+    {"sku": "SPT-SHOE-43", "product_id": "sport-shoe", "option": "43", "title": "Sport Laufschuh", "inventory_item_id": 70112, "available": 9},
+    {"sku": "HOME-CHAIR-OAK", "product_id": "home-chair", "option": "Eiche", "title": "Home Bürostuhl", "inventory_item_id": 70121, "available": 3},
+    {"sku": "HYP-BASKET-W", "product_id": "hyper-basket", "option": "Standard", "title": "Hyper Wochenkorb", "inventory_item_id": 70131, "available": 14},
+    {"sku": "SPT-TEE-M", "product_id": "sport-tee", "option": "M", "title": "Sport Laufshirt", "inventory_item_id": 70141, "available": 18}
   ]
 }

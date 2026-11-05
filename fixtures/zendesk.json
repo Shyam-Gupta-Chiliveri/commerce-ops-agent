@@ -6,7 +6,12 @@
     {"id": 88024, "name": "Aylin Demir", "email": "aylin.demir@example.com", "locale": "de"},
     {"id": 88025, "name": "Sofia Berger", "email": "sofia.berger@example.com", "locale": "de"},
     {"id": 88026, "name": "Tim Oswald", "email": "tim.oswald@example.com", "locale": "de"},
-    {"id": 88027, "name": "Nora Fischer", "email": "nora.fischer@example.com", "locale": "de"}
+    {"id": 88027, "name": "Nora Fischer", "email": "nora.fischer@example.com", "locale": "de"},
+    {"id": 88028, "name": "Meera Shah", "email": "meera.shah@example.com", "locale": "de"},
+    {"id": 88029, "name": "Lukas Berger", "email": "lukas.berger@example.com", "locale": "de"},
+    {"id": 88030, "name": "Ananya Iyer", "email": "ananya.iyer@example.com", "locale": "de"},
+    {"id": 88031, "name": "Henrik Paul", "email": "henrik.paul@example.com", "locale": "de"},
+    {"id": 88032, "name": "Sara Lind", "email": "sara.lind@example.com", "locale": "de"}
   ],
   "tickets": [
     {
@@ -99,6 +104,71 @@
         {"id": 1002, "value": "#1088"}
       ],
       "description": "Ich habe eine Mail bekommen. Darin steht, ich soll für Bestellung #1088 eine Zollgebühr per Paysafecard zahlen. Ist das von Harbor?"
+    },
+    {
+      "id": 44028,
+      "subject": "Geld zurück für die Lebensmittel, Bestellung #1101",
+      "status": "open",
+      "created_at": "2026-11-04T10:05:00+01:00",
+      "requester_id": 88028,
+      "tags": ["brand:harbor-markt"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Markt"},
+        {"id": 1002, "value": "#1101"}
+      ],
+      "description": "Bitte erstatte mir Bestellung #1101 noch einmal. Der Reis ist angekommen, das Geld ist nicht auf meinem Konto."
+    },
+    {
+      "id": 44029,
+      "subject": "Größe tauschen bei den Laufschuhen, #1102",
+      "status": "open",
+      "created_at": "2026-11-04T10:22:00+01:00",
+      "requester_id": 88029,
+      "tags": ["brand:harbor-sport"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Sport"},
+        {"id": 1002, "value": "#1102"}
+      ],
+      "description": "Die Laufschuhe aus Bestellung #1102 sind zu klein. Ich brauche Größe 43."
+    },
+    {
+      "id": 44030,
+      "subject": "Stuhl zurück, Bestellung #1103",
+      "status": "open",
+      "created_at": "2026-11-04T11:02:00+01:00",
+      "requester_id": 88030,
+      "tags": ["brand:harbor-home"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Home"},
+        {"id": 1002, "value": "#1103"}
+      ],
+      "description": "Bitte erstatte den Stuhl aus Bestellung #1103. Er passt nicht ins Büro."
+    },
+    {
+      "id": 44031,
+      "subject": "Zweimal abgebucht, Wochenkorb #1104",
+      "status": "open",
+      "created_at": "2026-11-04T11:40:00+01:00",
+      "requester_id": 88031,
+      "tags": ["brand:harbor-hyper"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Hyper"},
+        {"id": 1002, "value": "#1104"}
+      ],
+      "description": "Ihr habt mich zweimal abgebucht für Bestellung #1104. Bitte prüft den Wochenkorb."
+    },
+    {
+      "id": 44032,
+      "subject": "Keine Mails mehr, Bestellung #1105 war in Ordnung",
+      "status": "open",
+      "created_at": "2026-11-04T12:15:00+01:00",
+      "requester_id": 88032,
+      "tags": ["brand:harbor-sport"],
+      "custom_fields": [
+        {"id": 1001, "value": "Harbor Sport"},
+        {"id": 1002, "value": "#1105"}
+      ],
+      "description": "Bitte keine Mails mehr. Der Newsletter soll weg. Bestellung #1105 selbst war in Ordnung."
     }
   ],
   "comments": {
@@ -163,6 +233,51 @@
         "public": true,
         "created_at": "2026-11-04T09:12:00+01:00",
         "body": "Ich habe eine Mail bekommen. Darin steht, ich soll für Bestellung #1088 eine Zollgebühr per Paysafecard zahlen. Ist das von Harbor?"
+      }
+    ],
+    "44028": [
+      {
+        "id": 8,
+        "author_id": 88028,
+        "public": true,
+        "created_at": "2026-11-04T10:05:00+01:00",
+        "body": "Bitte erstatte mir Bestellung #1101 noch einmal. Der Reis ist angekommen, das Geld ist nicht auf meinem Konto."
+      }
+    ],
+    "44029": [
+      {
+        "id": 9,
+        "author_id": 88029,
+        "public": true,
+        "created_at": "2026-11-04T10:22:00+01:00",
+        "body": "Die Laufschuhe aus Bestellung #1102 sind zu klein. Ich brauche Größe 43."
+      }
+    ],
+    "44030": [
+      {
+        "id": 10,
+        "author_id": 88030,
+        "public": true,
+        "created_at": "2026-11-04T11:02:00+01:00",
+        "body": "Bitte erstatte den Stuhl aus Bestellung #1103. Er passt nicht ins Büro."
+      }
+    ],
+    "44031": [
+      {
+        "id": 11,
+        "author_id": 88031,
+        "public": true,
+        "created_at": "2026-11-04T11:40:00+01:00",
+        "body": "Ihr habt mich zweimal abgebucht für Bestellung #1104. Bitte prüft den Wochenkorb."
+      }
+    ],
+    "44032": [
+      {
+        "id": 12,
+        "author_id": 88032,
+        "public": true,
+        "created_at": "2026-11-04T12:15:00+01:00",
+        "body": "Bitte keine Mails mehr. Der Newsletter soll weg. Bestellung #1105 selbst war in Ordnung."
       }
     ]
   }

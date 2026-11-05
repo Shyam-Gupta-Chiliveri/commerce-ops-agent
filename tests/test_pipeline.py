@@ -7,10 +7,10 @@ from opsagent.warehouse.queries import connect
 
 def test_pagination_reaches_every_system(synced):
     _http, _settings, _db, stats = synced
-    assert stats.shopify_orders == 7
-    assert stats.shopify_pages == 4
-    assert stats.zendesk_tickets == 7
-    assert stats.zendesk_pages == 4
+    assert stats.shopify_orders == 12
+    assert stats.shopify_pages == 6
+    assert stats.zendesk_tickets == 12
+    assert stats.zendesk_pages == 6
     assert stats.klaviyo_events == 9
     assert stats.klaviyo_pages == 5
     assert stats.anvyl_orders == 3

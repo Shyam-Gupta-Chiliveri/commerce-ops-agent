@@ -60,8 +60,8 @@ Pagination is different on purpose, and each client follows that vendor's style:
 
 | System | How the next page works | Pages in the demo |
 | --- | --- | --- |
-| Shopify | `Link` header, opaque cursor | 4 for 7 orders |
-| Zendesk | `next_page` URL | 4 for 7 tickets |
+| Shopify | `Link` header, opaque cursor | 6 for 12 orders |
+| Zendesk | `next_page` URL | 6 for 12 tickets |
 | Klaviyo | `links.next` | 5 for 9 events |
 | Anvyl | `X-Total-Pages` | 2 for 3 purchase orders |
 | Sage | `$next` | 2 for 3 bills |
