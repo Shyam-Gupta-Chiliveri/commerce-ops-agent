@@ -14,7 +14,7 @@ from opsagent.agent.copilot import review_ticket
 from opsagent.eval.run import evaluate
 from opsagent.mockapi.app import create_app
 from opsagent.paths import PROJECT_ROOT, VAR_DIR
-from opsagent.settings import Settings, load_settings
+from opsagent.settings import Settings, load_settings, origins
 from opsagent.sync_asgi import SyncASGITransport
 from opsagent.warehouse.load import sync
 from opsagent.warehouse.queries import connect
@@ -41,9 +41,10 @@ ISSUE_TEXT = {
 def _prepare(settings: Settings):
     VAR_DIR.mkdir(parents=True, exist_ok=True)
     fixture = create_app(settings)
-    http = httpx.Client(transport=SyncASGITransport(fixture), base_url="http://mock")
+    http = httpx.Client(transport=SyncASGITransport(fixture), base_url="http://mock", timeout=60.0)
+    live = httpx.Client(timeout=60.0)
     db = VAR_DIR / "warehouse.sqlite"
-    stats = sync(http, settings, db, VAR_DIR / "bronze")
+    stats = sync(http, settings, db, VAR_DIR / "bronze", live)
     return db, stats
 
 
@@ -235,6 +236,7 @@ def create_prototype(settings: Settings | None = None) -> FastAPI:
                 "sage_pages": stats.sage_pages,
                 "ap_reviews": stats.ap_reviews,
             },
+            "origin": origins(settings),
             "service": {
                 "open_tickets": open_tickets,
                 "grounded_passed": grounded.passed,

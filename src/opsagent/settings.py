@@ -9,13 +9,21 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 
+from opsagent.paths import PROJECT_ROOT
+
 
 @dataclass(frozen=True)
 class Settings:
     shopify_token: str = "shpat_demo"
+    shopify_client_id: str = ""
+    shopify_client_secret: str = ""
+    shopify_shop: str = ""
     shopify_webhook_secret: str = "whsec_demo"
     zendesk_email: str = "agent@harborhouse.example"
     zendesk_api_token: str = "zd_demo"
+    zendesk_client_id: str = ""
+    zendesk_client_secret: str = ""
+    zendesk_subdomain: str = ""
     klaviyo_key: str = "klaviyo_demo"
     klaviyo_revision: str = "2025-04-15"
     anvyl_key: str = "anvyl_demo"
@@ -29,13 +37,88 @@ class Settings:
     page_size: int = 2
 
 
+def _load_dotenv() -> None:
+    path = PROJECT_ROOT / ".env"
+    if not path.is_file():
+        return
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+def _host(value: str, suffix: str) -> str:
+    host = value.strip().removeprefix("https://").removeprefix("http://").strip("/")
+    if host.endswith(suffix):
+        return host
+    return f"{host}{suffix}"
+
+
+def shopify_base(settings: Settings) -> str:
+    shop = settings.shopify_shop.strip()
+    has_token = settings.shopify_token not in ("", "shpat_demo")
+    has_app = bool(settings.shopify_client_id.strip() and settings.shopify_client_secret.strip())
+    if not shop or not (has_token or has_app):
+        return "http://mock"
+    return f"https://{_host(shop, '.myshopify.com')}"
+
+
+def zendesk_base(settings: Settings) -> str:
+    sub = settings.zendesk_subdomain.strip()
+    has_token = settings.zendesk_api_token not in ("", "zd_demo")
+    has_oauth = bool(settings.zendesk_client_id.strip() and settings.zendesk_client_secret.strip())
+    if not sub or not (has_token or has_oauth):
+        return "http://mock"
+    return f"https://{_host(sub, '.zendesk.com')}"
+
+
+def klaviyo_base(settings: Settings) -> str:
+    if settings.klaviyo_key in ("", "klaviyo_demo"):
+        return "http://mock"
+    return "https://a.klaviyo.com"
+
+
+def sage_base(settings: Settings) -> str:
+    if settings.sage_token in ("", "sage_demo") or settings.sage_business in ("", "biz_demo"):
+        return "http://mock"
+    return "https://api.accounting.sage.com"
+
+
+def origins(settings: Settings) -> dict[str, object]:
+    hosts = {
+        "shopify": shopify_base(settings),
+        "zendesk": zendesk_base(settings),
+        "klaviyo": klaviyo_base(settings),
+        "anvyl": "http://mock",
+        "sage": sage_base(settings),
+    }
+    live = [f"{name} {hosts[name]}" for name in hosts if str(hosts[name]).startswith("https://")]
+    if not live:
+        text_en = "These counts were read from the local sample, not from a signed-in account."
+        text_de = "Diese Zahlen stammen aus der lokalen Beispielkopie, nicht aus einem angemeldeten Konto."
+    else:
+        detail = ", ".join(live)
+        text_en = f"Live pull from {detail}. Every other source is still the local sample."
+        text_de = f"Live-Abruf von {detail}. Jede andere Quelle ist noch die lokale Beispielkopie."
+    return {"hosts": hosts, "en": text_en, "de": text_de}
+
+
 def load_settings() -> Settings:
+    _load_dotenv()
     base = Settings()
     return Settings(
         shopify_token=os.getenv("SHOPIFY_TOKEN", base.shopify_token),
+        shopify_client_id=os.getenv("SHOPIFY_CLIENT_ID", base.shopify_client_id),
+        shopify_client_secret=os.getenv("SHOPIFY_CLIENT_SECRET", base.shopify_client_secret),
+        shopify_shop=os.getenv("SHOPIFY_SHOP", base.shopify_shop),
         shopify_webhook_secret=os.getenv("SHOPIFY_WEBHOOK_SECRET", base.shopify_webhook_secret),
         zendesk_email=os.getenv("ZENDESK_EMAIL", base.zendesk_email),
         zendesk_api_token=os.getenv("ZENDESK_API_TOKEN", base.zendesk_api_token),
+        zendesk_client_id=os.getenv("ZENDESK_CLIENT_ID", base.zendesk_client_id),
+        zendesk_client_secret=os.getenv("ZENDESK_CLIENT_SECRET", base.zendesk_client_secret),
+        zendesk_subdomain=os.getenv("ZENDESK_SUBDOMAIN", base.zendesk_subdomain),
         klaviyo_key=os.getenv("KLAVIYO_API_KEY", base.klaviyo_key),
         klaviyo_revision=os.getenv("KLAVIYO_REVISION", base.klaviyo_revision),
         anvyl_key=os.getenv("ANVYL_API_KEY", base.anvyl_key),

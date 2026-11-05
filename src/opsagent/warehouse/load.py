@@ -33,10 +33,16 @@ class SyncStats:
     ap_reviews: int
 
 
-def sync(http: httpx.Client, settings: Settings, db_path: Path, bronze_dir: Path | None = None) -> SyncStats:
-    shopify, zendesk, klaviyo, anvyl, sage = build_clients(http, settings)
-    orders, order_pages = shopify.list_orders()
-    variants, _variant_pages = shopify.list_variants()
+def sync(
+    http: httpx.Client,
+    settings: Settings,
+    db_path: Path,
+    bronze_dir: Path | None = None,
+    live_http: httpx.Client | None = None,
+) -> SyncStats:
+    shopify, zendesk, klaviyo, anvyl, sage = build_clients(http, settings, live_http)
+    orders, order_pages = _live_or_empty(shopify.list_orders)
+    variants, _variant_pages = _live_or_empty(shopify.list_variants)
     tickets, ticket_pages = zendesk.list_tickets()
     users = zendesk.list_users()
     events, event_pages = klaviyo.list_events()
@@ -83,6 +89,17 @@ def sync(http: httpx.Client, settings: Settings, db_path: Path, bronze_dir: Path
     )
 
 
+def _live_or_empty(call):
+    """A 403 from a live account leaves that list empty so the other sources still load."""
+    try:
+        return call()
+    except httpx.HTTPStatusError as exc:
+        if exc.response.status_code != 403:
+            raise
+        print(exc.response.text[:400])
+        return [], 0
+
+
 def _dump(path: Path, payload) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -123,7 +140,7 @@ def _load_shopify(conn, orders, variants, transactions) -> None:
             (
                 order["id"],
                 order["name"],
-                order["email"],
+                order.get("email") or "",
                 (order.get("customer") or {}).get("first_name"),
                 _brand(order.get("tags") or ""),
                 order["created_at"],
@@ -152,10 +169,21 @@ def _load_shopify(conn, orders, variants, transactions) -> None:
                 """,
                 (txn["id"], order["id"], txn["kind"], txn["status"], txn["amount"], txn["gateway"], txn["created_at"]),
             )
+    seen_skus: set[str] = set()
     for variant in variants:
+        sku = variant.get("sku") or ""
+        if not sku or sku in seen_skus:
+            continue
+        seen_skus.add(sku)
         conn.execute(
             "INSERT INTO inventory (sku, product_id, option_label, title, available) VALUES (?, ?, ?, ?, ?)",
-            (variant["sku"], variant["product_id"], variant["option"], variant["title"], variant["available"]),
+            (
+                sku,
+                variant.get("product_id"),
+                variant.get("option") or variant.get("option1") or "",
+                variant.get("title") or "",
+                variant["available"] if variant.get("available") is not None else variant.get("inventory_quantity") or 0,
+            ),
         )
 
 
@@ -167,7 +195,7 @@ def _load_zendesk(conn, tickets, users, comments) -> None:
             (user["id"], user["name"], user["email"], user["locale"]),
         )
     for ticket in tickets:
-        user = by_id[ticket["requester_id"]]
+        user = by_id.get(ticket["requester_id"]) or {"email": "", "name": "Customer"}
         conn.execute(
             """
             INSERT INTO zendesk_tickets (
@@ -185,7 +213,7 @@ def _load_zendesk(conn, tickets, users, comments) -> None:
                 user["email"],
                 user["name"].split()[0],
                 ticket["created_at"],
-                ticket["description"],
+                ticket.get("description") or "",
             ),
         )
         for comment in comments.get(ticket["id"], []):

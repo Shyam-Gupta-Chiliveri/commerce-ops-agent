@@ -952,6 +952,7 @@ function renderReport() {
         <button type="button" class="door" data-desk="invoices"><span class="kicker">${esc(t().invoiceResult)}</span><b>${esc(invoices.documents)}</b><span class="meaning">${esc(t().meanDocs)}</span><span>${esc(invoices.investigate)} ${esc(t().onHoldDocs)} EUR ${esc(money(invoices.gross))}.</span></button>
       </div>
       <h2 class="kicker">${esc(t().loaded)}</h2>
+      <p class="issue">${esc(lang === "de" ? (reportData.origin || {}).de : (reportData.origin || {}).en)}</p>
       <div class="sources">
         ${source(sync.shopify_orders, sync.shopify_pages, "Shopify", t().shopOrders)}
         ${source(sync.zendesk_tickets, sync.zendesk_pages, "Zendesk", t().helpTickets)}

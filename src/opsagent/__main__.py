@@ -12,26 +12,27 @@ from opsagent.mockapi.app import create_app
 from opsagent.prototype import create_prototype
 from opsagent.paths import VAR_DIR
 from opsagent.reporting.report import render_report
-from opsagent.settings import load_settings
+from opsagent.settings import load_settings, origins
 from opsagent.sync_asgi import SyncASGITransport
 from opsagent.warehouse.load import sync
 
 
 def _client(settings):
     app = create_app(settings)
-    http = httpx.Client(transport=SyncASGITransport(app), base_url="http://mock")
-    return app, http
+    http = httpx.Client(transport=SyncASGITransport(app), base_url="http://mock", timeout=60.0)
+    live = httpx.Client(timeout=60.0)
+    return app, http, live
 
 
-def _run_sync(settings, http):
+def _run_sync(settings, http, live):
     VAR_DIR.mkdir(parents=True, exist_ok=True)
-    return sync(http, settings, VAR_DIR / "warehouse.sqlite", VAR_DIR / "bronze")
+    return sync(http, settings, VAR_DIR / "warehouse.sqlite", VAR_DIR / "bronze", live)
 
 
 def cmd_demo() -> None:
     settings = load_settings()
-    _app, http = _client(settings)
-    stats = _run_sync(settings, http)
+    _app, http, live = _client(settings)
+    stats = _run_sync(settings, http, live)
     db = VAR_DIR / "warehouse.sqlite"
     grounded = evaluate(db, settings, "grounded")
     ungrounded = evaluate(db, settings, "ungrounded")
@@ -50,8 +51,8 @@ def cmd_demo() -> None:
 
 def cmd_ticket(ticket_id: int) -> None:
     settings = load_settings()
-    _app, http = _client(settings)
-    _run_sync(settings, http)
+    _app, http, live = _client(settings)
+    _run_sync(settings, http, live)
     result = review_ticket(VAR_DIR / "warehouse.sqlite", ticket_id, settings)
     print(result.reply_de)
     print(result.internal_note)
@@ -63,8 +64,8 @@ def cmd_ticket(ticket_id: int) -> None:
 
 def cmd_eval() -> None:
     settings = load_settings()
-    _app, http = _client(settings)
-    _run_sync(settings, http)
+    _app, http, live = _client(settings)
+    _run_sync(settings, http, live)
     db = VAR_DIR / "warehouse.sqlite"
     for name in ("grounded", "ungrounded"):
         print(format_eval(evaluate(db, settings, name)))
@@ -73,6 +74,20 @@ def cmd_eval() -> None:
 def cmd_serve() -> None:
     settings = load_settings()
     uvicorn.run(create_app(settings), host="127.0.0.1", port=8091)
+
+
+def cmd_pull() -> None:
+    settings = load_settings()
+    source = origins(settings)
+    print(source["en"])
+    for name, host in source["hosts"].items():
+        print(f"{name}: {host}")
+    _app, http, live = _client(settings)
+    stats = _run_sync(settings, http, live)
+    print(
+        f"orders {stats.shopify_orders} tickets {stats.zendesk_tickets} "
+        f"events {stats.klaviyo_events} bills {stats.sage_bills}"
+    )
 
 
 def cmd_prototype() -> None:
@@ -88,6 +103,7 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("eval")
     sub.add_parser("serve")
     sub.add_parser("prototype")
+    sub.add_parser("pull")
     ticket = sub.add_parser("ticket")
     ticket.add_argument("ticket_id", type=int)
     args = parser.parse_args(argv)
@@ -99,6 +115,8 @@ def main(argv: list[str] | None = None) -> None:
         cmd_serve()
     elif args.cmd == "prototype":
         cmd_prototype()
+    elif args.cmd == "pull":
+        cmd_pull()
     elif args.cmd == "ticket":
         cmd_ticket(args.ticket_id)
 

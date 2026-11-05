@@ -15,7 +15,10 @@ class KlaviyoClient:
         self.session = session
 
     def list_events(self) -> tuple[list[dict], int]:
-        url: str | None = "/api/events?page_size=2"
+        query = "page_size=2"
+        if "klaviyo.com" in self.session.base_url:
+            query = "include=metric,profile&page_size=2"
+        url: str | None = f"/api/events?{query}"
         rows: list[dict] = []
         pages = 0
         while url:

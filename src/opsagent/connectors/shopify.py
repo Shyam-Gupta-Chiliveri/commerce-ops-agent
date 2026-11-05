@@ -20,14 +20,15 @@ class ShopifyClient:
     sends that URL back untouched and does not parse page_info.
     """
 
-    def __init__(self, session: ApiSession):
+    def __init__(self, session: ApiSession, api_version: str = "2024-10"):
         self.session = session
+        self.api_version = api_version
 
     def _headers(self) -> dict[str, str]:
         return {}
 
     def list_orders(self) -> tuple[list[dict], int]:
-        url: str | None = "/admin/api/2024-10/orders.json?status=any&limit=2"
+        url: str | None = f"/admin/api/{self.api_version}/orders.json?status=any&limit=2"
         rows: list[dict] = []
         pages = 0
         while url:
@@ -38,7 +39,7 @@ class ShopifyClient:
         return rows, pages
 
     def list_variants(self) -> tuple[list[dict], int]:
-        url: str | None = "/admin/api/2024-10/variants.json?limit=2"
+        url: str | None = f"/admin/api/{self.api_version}/variants.json?limit=2"
         rows: list[dict] = []
         pages = 0
         while url:
@@ -49,5 +50,5 @@ class ShopifyClient:
         return rows, pages
 
     def list_transactions(self, order_id: int) -> list[dict]:
-        response = self.session.send("GET", f"/admin/api/2024-10/orders/{order_id}/transactions.json")
+        response = self.session.send("GET", f"/admin/api/{self.api_version}/orders/{order_id}/transactions.json")
         return response.json()["transactions"]

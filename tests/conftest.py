@@ -4,14 +4,14 @@ import httpx
 import pytest
 
 from opsagent.mockapi.app import create_app
-from opsagent.settings import load_settings
+from opsagent.settings import Settings
 from opsagent.sync_asgi import SyncASGITransport
 from opsagent.warehouse.load import sync
 
 
 @pytest.fixture
 def settings():
-    return load_settings()
+    return Settings()
 
 
 @pytest.fixture
